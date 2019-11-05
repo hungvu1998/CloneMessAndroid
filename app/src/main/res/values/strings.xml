@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+
+    <resources>
+
+    <string name="app_name">CloneMessageAndroid</string>
+
+    <string name="not_on_fb">Not On Facebook?</string>
+
+    <string name="text_banner_1">Welcome to</string>
+
+    <string name="text_banner_2">Messenger</string>
+
+    <string name="email">Email</string>
+
+    <string name="password">Password</string>
+
+</resources>
