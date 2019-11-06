@@ -29,7 +29,7 @@ import java.net.HttpURLConnection
 import java.net.URL
 import java.nio.ByteBuffer
 
-class StoryRecyclerAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>(){
+class StoryRecyclerAdapter(var recyclerClickItem: RecyclerClickItem) : RecyclerView.Adapter<RecyclerView.ViewHolder>(){
 
     var arrayList: ArrayList<UserModel> = ArrayList()
 
@@ -40,7 +40,7 @@ class StoryRecyclerAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>(){
     }
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
-        (holder as PostViewHolder).bind(arrayList[position ],position)
+        (holder as PostViewHolder).bind(arrayList[position ],position,recyclerClickItem)
 
     }
 
@@ -62,7 +62,7 @@ class StoryRecyclerAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>(){
         private var img_user_active:CircleImageView=itemView.findViewById(R.id.img_user_active)
         private var layout_all:FrameLayout = itemView.findViewById(R.id.layout_all)
 
-        fun bind(userModel: UserModel,position: Int) {
+        fun bind(userModel: UserModel,position: Int,recyclerClickItem : RecyclerClickItem) {
             if(position!=0){
                 Log.d("kiemtra",""+userModel.uid)
                layout_add.visibility=View.GONE
@@ -77,6 +77,10 @@ class StoryRecyclerAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>(){
                     story_user.visibility=View.VISIBLE
                     user_active.visibility=View.GONE
                     Picasso.get().load(userModel.listStories[userModel.listStories.size-1].img).into(story_user)
+
+                    story_user.setOnClickListener {
+                        recyclerClickItem.doThis(userModel.listStories)
+                    }
                 }
 
                 if (userModel.stories==null && userModel.isActive!!){

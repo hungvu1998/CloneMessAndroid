@@ -1,5 +1,6 @@
 package com.example.clonemessandroid.ui.home.message
 
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -11,6 +12,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.clonemessandroid.R
 import com.example.clonemessandroid.data.model.Stories
 import com.example.clonemessandroid.data.model.UserModel
+import com.example.clonemessandroid.ui.detail_stories.StoriesDetailActivity
 import com.example.clonemessandroid.ui.home.HomeViewModel
 import com.example.clonemessandroid.ui.home.local.LocalViewModel
 import com.example.clonemessandroid.viewmodels.ViewModelProvidersFactory
@@ -21,7 +23,12 @@ import kotlinx.android.synthetic.main.progress_bar.*
 
 import javax.inject.Inject
 
-class MessageFragment : DaggerFragment(){
+class MessageFragment : DaggerFragment(),RecyclerClickItem{
+    override fun doThis(array: ArrayList<Stories>) {
+        val intent = Intent(activity,StoriesDetailActivity::class.java)
+        intent.putParcelableArrayListExtra("listStories",array)
+        startActivity(intent)
+    }
 
     @Inject
     lateinit var providerFactory: ViewModelProvidersFactory
@@ -77,7 +84,7 @@ class MessageFragment : DaggerFragment(){
 
     }
     private fun initRecyclerView() {
-        adapter= StoryRecyclerAdapter()
+        adapter= StoryRecyclerAdapter(this)
         listFriend.add(UserModel())
         adapter.setFriendList(listFriend)
         val layoutManager=LinearLayoutManager(activity,LinearLayoutManager.HORIZONTAL, false)
