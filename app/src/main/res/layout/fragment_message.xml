@@ -22,16 +22,13 @@
                 android:background="@drawable/border_edittext_search"
                 android:layout_height="50dp"/>
 
+
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/recyclerListStory"
                 android:layout_marginTop="10dp"
                 android:layout_width="match_parent"
-                android:layout_height="90dp"/>
-            <TextView
-                android:layout_width="match_parent"
-                android:text="Your story"
-                android:layout_marginTop="5dp"
-                android:layout_height="wrap_content"/>
+                android:layout_height="100dp"/>
+
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/recyclerListMess"

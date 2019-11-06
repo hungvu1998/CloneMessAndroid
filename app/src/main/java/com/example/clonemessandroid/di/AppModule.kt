@@ -10,6 +10,8 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.RequestManager
 import com.bumptech.glide.request.RequestOptions
 import com.example.clonemessandroid.R
+import com.google.firebase.database.DatabaseReference
+import com.google.firebase.database.FirebaseDatabase
 import dagger.Module
 import dagger.Provides
 import retrofit2.Retrofit
@@ -25,6 +27,11 @@ class AppModule {
         return "this is a test"
     }
 
+    @Singleton
+    @Provides
+    internal fun provideDatabaseReferenceInstance(): DatabaseReference {
+        return FirebaseDatabase.getInstance().reference
+    }
 
 
     @Singleton

@@ -13,6 +13,7 @@ import com.bumptech.glide.RequestManager
 import com.example.clonemessandroid.R
 import com.example.clonemessandroid.ui.home.HomeActivity
 import com.example.clonemessandroid.viewmodels.ViewModelProvidersFactory
+import com.google.firebase.database.DatabaseReference
 import dagger.android.support.DaggerAppCompatActivity
 import kotlinx.android.synthetic.main.layout_login.*
 import javax.inject.Inject
@@ -21,6 +22,8 @@ class LoginActivity : DaggerAppCompatActivity(),LoginNavigator {
 
     @Inject
     lateinit var providerFactory: ViewModelProvidersFactory
+
+
 
     lateinit var viewModel: LoginViewModel
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -46,8 +49,9 @@ class LoginActivity : DaggerAppCompatActivity(),LoginNavigator {
             progress_bar?.visibility= View.GONE
         }
     }
-    fun onLoginSucce(){
+    fun onLoginSucce(uid: String?){
         val intent= Intent(this,HomeActivity::class.java)
+        intent.putExtra("uid",uid)
         startActivity(intent)
         finish()
     }
@@ -85,14 +89,14 @@ class LoginActivity : DaggerAppCompatActivity(),LoginNavigator {
         }
     }
 
-    override fun succes(boolean: Boolean) {
+    override fun succes(boolean: Boolean,uid:String?) {
         showProgressBar(false)
         if(!boolean){
             Toast.makeText(this,"Email or Password not valid", Toast.LENGTH_SHORT).show()
         }
         else{
             Toast.makeText(this,"Login successful", Toast.LENGTH_SHORT).show()
-            onLoginSucce()
+            onLoginSucce(uid)
         }
     }
 }
