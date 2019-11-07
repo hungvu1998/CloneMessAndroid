@@ -13,7 +13,7 @@ import com.bumptech.glide.RequestManager
 import com.example.clonemessandroid.R
 import com.example.clonemessandroid.ui.home.HomeActivity
 import com.example.clonemessandroid.viewmodels.ViewModelProvidersFactory
-import com.google.firebase.database.DatabaseReference
+
 import dagger.android.support.DaggerAppCompatActivity
 import kotlinx.android.synthetic.main.layout_login.*
 import javax.inject.Inject
