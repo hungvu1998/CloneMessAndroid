@@ -10,6 +10,7 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.RequestManager
 import com.bumptech.glide.request.RequestOptions
 import com.example.clonemessandroid.R
+import com.example.clonemessandroid.util.Constants
 
 import dagger.Module
 import dagger.Provides
@@ -51,6 +52,16 @@ class AppModule {
     @Provides
     fun provideAppDrawable(application: Application):Drawable{
         return ContextCompat.getDrawable(application,R.drawable.icon_mess)!!
+    }
+
+    @Singleton
+    @Provides
+    internal fun provideRetrofitInstance(): Retrofit {
+        return Retrofit.Builder()
+            .baseUrl(Constants.BASE_URL)
+            .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
+            .addConverterFactory(GsonConverterFactory.create())
+            .build()
     }
 
 

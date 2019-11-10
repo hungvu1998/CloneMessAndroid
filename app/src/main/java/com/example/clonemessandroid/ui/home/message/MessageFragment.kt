@@ -62,20 +62,20 @@ class MessageFragment : DaggerFragment(),RecyclerClickItem{
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
-        homeViewModel.liveDataUserModel.observe(this, Observer {it->
-            Picasso.get().load(it.img).into(profile_image)
-            userCurrent=it
-
-            it.listFriend?.let { it1 -> messageViewModel.getProfileFriend(it1) }
-
-        })
-        messageViewModel.liveDataFriend.observe(this, Observer {it->
-            listFriend.add(it)
-            if(listFriend.size == userCurrent.listFriend!!.size){
-                adapter.setFriendList(listFriend)
-            }
-
-        })
+//        homeViewModel.liveDataUserModel.observe(this, Observer {it->
+//            Picasso.get().load(it.img).into(profile_image)
+//            userCurrent=it
+//
+//            it.listFriend?.let { it1 -> messageViewModel.getProfileFriend(it1) }
+//
+//        })
+//        messageViewModel.liveDataFriend.observe(this, Observer {it->
+//            listFriend.add(it)
+//            if(listFriend.size == userCurrent.listFriend!!.size){
+//                adapter.setFriendList(listFriend)
+//            }
+//
+//        })
 
         initRecyclerView()
         subscribeObservers()

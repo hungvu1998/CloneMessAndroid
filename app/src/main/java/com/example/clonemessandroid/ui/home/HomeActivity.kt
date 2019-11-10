@@ -25,13 +25,13 @@ class HomeActivity : DaggerAppCompatActivity(),BottomNavigationView.OnNavigation
     lateinit var homeViewModel: HomeViewModel
 
     lateinit var adapter: ViewPageHomeAdapter
-    lateinit var uid:String
+    lateinit var userModel:UserModel
     var listUser:ArrayList<UserModel> = ArrayList()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.layout_home)
-       // uid= intent.getStringExtra("uid")
-        uid = "uid1"
+        userModel= intent.getParcelableExtra("userModel")
+
         homeViewModel= ViewModelProviders.of(this,providerFactory).get(HomeViewModel::class.java)
 
         initViewPage()
@@ -61,7 +61,7 @@ class HomeActivity : DaggerAppCompatActivity(),BottomNavigationView.OnNavigation
         viewpager?.offscreenPageLimit=3
     }
     private fun subscribeObervers(){
-        homeViewModel.getUserInfo(uid)
+       // homeViewModel.getUserInfo(uid)
     }
 
 }

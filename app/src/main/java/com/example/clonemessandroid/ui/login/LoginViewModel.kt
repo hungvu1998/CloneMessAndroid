@@ -5,13 +5,14 @@ import android.util.Log
 import android.util.Patterns
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import com.example.clonemessandroid.network.LoginApi
+import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.schedulers.Schedulers
 //import com.google.firebase.database.*
 import javax.inject.Inject
 
 class LoginViewModel  @Inject
-constructor(
-
-): ViewModel() {
+constructor(val loginApi: LoginApi): ViewModel() {
     //@Inject
    // lateinit var database : DatabaseReference
     var mIsValidUser: MutableLiveData<Boolean> = MutableLiveData()
@@ -36,35 +37,21 @@ constructor(
     }
 
     fun loginNormal(userName: String, pass: String) {
-//        val user = database.child("taikhoan").child(userName.trim())
-//        user.addListenerForSingleValueEvent(object : ValueEventListener {
-//            override fun onCancelled(p0: DatabaseError) {
-//               Log.d("kiemtra",""+p0)
-//            }
-//
-//            override fun onDataChange(p0: DataSnapshot) {
-//
-//                if(p0.value==null){
-//                    getNavigator()!!.succes(false,null)
-//                }
-//                else{
-//                    if(pass==p0.child("pass").value){
-//                        getNavigator()!!.succes(true,p0.child("uid").value.toString())
-//                    }
-//                    else{
-//                        getNavigator()!!.succes(false,null)
-//                    }
-//                }
-//            }
-//        })
+        loginApi.login(userName,pass)
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe({it->
+                if(it.message!!){
+                    getNavigator()!!.succes(true,it)
+                }
+                else{
+                    getNavigator()!!.succes(false,null)
+                }
 
-//        firebaseAuth.signInWithEmailAndPassword(userName, pass).addOnCompleteListener { task ->
-//            if (task.isSuccessful) {
-//
-//            } else {
-//                getNavigator()!!.succes(false)
-//            }
-//        }
+            },{it->
+
+
+            })
     }
 
     fun isEmailAndPasswordValid() {

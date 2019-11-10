@@ -11,6 +11,7 @@ import androidx.lifecycle.ViewModelProviders
 import com.bumptech.glide.Glide
 import com.bumptech.glide.RequestManager
 import com.example.clonemessandroid.R
+import com.example.clonemessandroid.data.model.UserModel
 import com.example.clonemessandroid.ui.home.HomeActivity
 import com.example.clonemessandroid.viewmodels.ViewModelProvidersFactory
 
@@ -49,9 +50,9 @@ class LoginActivity : DaggerAppCompatActivity(),LoginNavigator {
             progress_bar?.visibility= View.GONE
         }
     }
-    fun onLoginSucce(uid: String?){
+    fun onLoginSucce(userModel: UserModel){
         val intent= Intent(this,HomeActivity::class.java)
-        intent.putExtra("uid",uid)
+        intent.putExtra("userModel",userModel)
         startActivity(intent)
         finish()
     }
@@ -89,14 +90,14 @@ class LoginActivity : DaggerAppCompatActivity(),LoginNavigator {
         }
     }
 
-    override fun succes(boolean: Boolean,uid:String?) {
+    override fun succes(boolean: Boolean,userModel: UserModel?) {
         showProgressBar(false)
         if(!boolean){
             Toast.makeText(this,"Email or Password not valid", Toast.LENGTH_SHORT).show()
         }
         else{
             Toast.makeText(this,"Login successful", Toast.LENGTH_SHORT).show()
-            onLoginSucce(uid)
+            onLoginSucce(userModel!!)
         }
     }
 }
