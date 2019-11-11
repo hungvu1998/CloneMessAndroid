@@ -17,7 +17,7 @@ class HomeViewModel  @Inject constructor() : ViewModel() {
 
     var liveDataUserModel:MutableLiveData<UserModel> = MutableLiveData()
 
-     fun getUserInfo(uid:String){
-
+     fun getUserInfo(userModel: UserModel){
+         liveDataUserModel.value=userModel
     }
 }

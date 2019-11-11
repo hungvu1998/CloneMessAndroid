@@ -45,6 +45,7 @@ class StoryRecyclerAdapter(var recyclerClickItem: RecyclerClickItem) : RecyclerV
     }
 
     override fun getItemCount(): Int {
+
         return arrayList.size
     }
 
@@ -63,16 +64,24 @@ class StoryRecyclerAdapter(var recyclerClickItem: RecyclerClickItem) : RecyclerV
         private var layout_all:FrameLayout = itemView.findViewById(R.id.layout_all)
 
         fun bind(userModel: UserModel,position: Int,recyclerClickItem : RecyclerClickItem) {
-//            if(position!=0){
-//
-//               layout_add.visibility=View.GONE
-//                if (userModel.stories==null && !userModel.isActive!!){
-//                    story_user.visibility=View.GONE
-//                    user_active.visibility=View.GONE
-//                    layout_all.visibility=View.GONE
-//                    layout_all.layoutParams = FrameLayout.LayoutParams(0, 0)
-//                }
-//
+            if(position!=0){
+                layout_add.visibility=View.GONE
+                if(userModel.active!=null){
+                    if ( !userModel.active!!){
+                        story_user.visibility=View.GONE
+                        user_active.visibility=View.GONE
+                        layout_all.visibility=View.GONE
+                        layout_all.layoutParams = FrameLayout.LayoutParams(0, 0)
+                    }
+                    if (userModel.active!!){
+                        story_user.visibility=View.VISIBLE
+                        user_active.visibility=View.GONE
+                        Picasso.get().load(userModel.avatar!!).into(story_user)
+                    }
+                }
+
+
+
 //                if (userModel.stories!=null){
 //                    story_user.visibility=View.VISIBLE
 //                    user_active.visibility=View.GONE
@@ -82,20 +91,15 @@ class StoryRecyclerAdapter(var recyclerClickItem: RecyclerClickItem) : RecyclerV
 //                        recyclerClickItem.doThis(userModel.listStories)
 //                    }
 //                }
-//
-//                if (userModel.stories==null && userModel.isActive!!){
-//                    story_user.visibility=View.GONE
-//                    user_active.visibility=View.VISIBLE
-//                    Picasso.get().load(userModel.img!!).into(img_user_active)
-//                }
-//
-//            }
-//            else{
-//                layout_add.visibility=View.VISIBLE
-//                story_user.visibility=View.GONE
-//
-//                user_active.visibility=View.GONE
-//            }
+
+
+
+            }
+            else{
+                layout_add.visibility=View.VISIBLE
+                story_user.visibility=View.GONE
+                user_active.visibility=View.GONE
+            }
 
 
         }

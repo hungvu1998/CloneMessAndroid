@@ -13,20 +13,25 @@ import com.bumptech.glide.RequestManager
 import com.example.clonemessandroid.R
 import com.example.clonemessandroid.data.model.UserModel
 import com.example.clonemessandroid.ui.home.HomeActivity
+import com.example.clonemessandroid.ui.register.RegisterActivity
 import com.example.clonemessandroid.viewmodels.ViewModelProvidersFactory
 
 import dagger.android.support.DaggerAppCompatActivity
 import kotlinx.android.synthetic.main.layout_login.*
 import javax.inject.Inject
+import android.view.View.OnFocusChangeListener
+
+
+
+
 
 class LoginActivity : DaggerAppCompatActivity(),LoginNavigator {
 
     @Inject
     lateinit var providerFactory: ViewModelProvidersFactory
 
-
-
     lateinit var viewModel: LoginViewModel
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.layout_login)
@@ -38,6 +43,12 @@ class LoginActivity : DaggerAppCompatActivity(),LoginNavigator {
         btnLogIn?.setOnClickListener {
             viewModel.isEmailAndPasswordValid()
         }
+        btnCreate?.setOnClickListener {
+            val intent=  Intent(this,RegisterActivity::class.java)
+            startActivity(intent)
+        }
+
+
         subcribeObservers()
     }
 
@@ -53,6 +64,7 @@ class LoginActivity : DaggerAppCompatActivity(),LoginNavigator {
     fun onLoginSucce(userModel: UserModel){
         val intent= Intent(this,HomeActivity::class.java)
         intent.putExtra("userModel",userModel)
+
         startActivity(intent)
         finish()
     }
@@ -91,6 +103,7 @@ class LoginActivity : DaggerAppCompatActivity(),LoginNavigator {
     }
 
     override fun succes(boolean: Boolean,userModel: UserModel?) {
+
         showProgressBar(false)
         if(!boolean){
             Toast.makeText(this,"Email or Password not valid", Toast.LENGTH_SHORT).show()

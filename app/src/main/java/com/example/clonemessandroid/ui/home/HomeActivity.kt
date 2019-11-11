@@ -27,6 +27,7 @@ class HomeActivity : DaggerAppCompatActivity(),BottomNavigationView.OnNavigation
     lateinit var adapter: ViewPageHomeAdapter
     lateinit var userModel:UserModel
     var listUser:ArrayList<UserModel> = ArrayList()
+    lateinit var onBack :OnBack
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.layout_home)
@@ -61,7 +62,21 @@ class HomeActivity : DaggerAppCompatActivity(),BottomNavigationView.OnNavigation
         viewpager?.offscreenPageLimit=3
     }
     private fun subscribeObervers(){
-       // homeViewModel.getUserInfo(uid)
+        homeViewModel.getUserInfo(userModel)
+    }
+    fun setOnBackListener(onBack: OnBack){
+        this.onBack=onBack
+    }
+    override fun onBackPressed() {
+        if(onBack!=null){
+            onBack.onBack()
+        }
+        else
+        super.onBackPressed()
+
+    }
+    fun methodOnBack(){
+        super.onBackPressed()
     }
 
 }

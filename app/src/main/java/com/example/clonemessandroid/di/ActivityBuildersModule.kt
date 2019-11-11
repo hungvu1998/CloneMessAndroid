@@ -8,9 +8,12 @@ import com.example.clonemessandroid.di.home.HomeModule
 import com.example.clonemessandroid.di.home.HomeViewModelsModule
 import com.example.clonemessandroid.di.login.LoginModule
 import com.example.clonemessandroid.di.login.LoginViewModelsModule
+import com.example.clonemessandroid.di.register.RegisterModule
+import com.example.clonemessandroid.di.register.RegisterViewModelsModule
 import com.example.clonemessandroid.ui.detail_stories.StoriesDetailActivity
 import com.example.clonemessandroid.ui.home.HomeActivity
 import com.example.clonemessandroid.ui.login.LoginActivity
+import com.example.clonemessandroid.ui.register.RegisterActivity
 import dagger.Module
 import dagger.android.ContributesAndroidInjector
 
@@ -24,6 +27,9 @@ abstract class ActivityBuildersModule {
     @ContributesAndroidInjector(modules = [LoginViewModelsModule::class, LoginModule::class])
     abstract fun contributeLoginActivity(): LoginActivity
 
+
+    @ContributesAndroidInjector(modules = [RegisterViewModelsModule::class, RegisterModule::class])
+    abstract fun contributeRegisterActivity(): RegisterActivity
 
     @ContributesAndroidInjector(modules = [DetailStoriesFragmentBuildersModule::class, DetailStoriesModelsModule::class, DetailStoriesModule::class])
     abstract fun contributeStoriesDetailActivity(): StoriesDetailActivity

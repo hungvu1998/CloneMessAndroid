@@ -1,44 +1,45 @@
-package com.example.clonemessandroid.ui.login
+package com.example.clonemessandroid.ui.register
 
 import android.text.TextUtils
-import android.util.Log
-import android.util.Patterns
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.example.clonemessandroid.network.LoginApi
+import com.example.clonemessandroid.network.RegisterApi
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
-//import com.google.firebase.database.*
 import javax.inject.Inject
 
-class LoginViewModel  @Inject
-constructor(val loginApi: LoginApi): ViewModel() {
-    //@Inject
-   // lateinit var database : DatabaseReference
+class RegisterViewModel@Inject
+constructor(val registerApi: RegisterApi) :ViewModel(){
+    private var mNavigator: RegisterNavigator? = null
     var mIsValidUser: MutableLiveData<Boolean> = MutableLiveData()
     var mIsValidPass: MutableLiveData<Boolean> = MutableLiveData()
+    var mIsValidRetypePass: MutableLiveData<Boolean> = MutableLiveData()
 
-    private var mNavigator: LoginNavigator? = null
-
-
-    fun getNavigator(): LoginNavigator? {
+    fun getNavigator(): RegisterNavigator? {
         return mNavigator
     }
 
-    fun setNavigator(navigator: LoginNavigator) {
+    fun setNavigator(navigator: RegisterNavigator) {
         this.mNavigator = navigator
     }
+
     fun isValidUser(email:String): Boolean {
         return !TextUtils.isEmpty(email)
-                //&& Patterns.EMAIL_ADDRESS.matcher(email).matches()
+        //&& Patterns.EMAIL_ADDRESS.matcher(email).matches()
     }
     fun isValidPassWord(pass:String): Boolean {
         return !TextUtils.isEmpty(pass)
-
+    }
+    fun isValidRetypePass(pass:String,passRetype : String):Boolean {
+        return  TextUtils.equals(passRetype,pass)
     }
 
-    fun loginNormal(userName: String, pass: String) {
-        loginApi.login(userName,pass)
+    fun isEmailAndPasswordValid() {
+        getNavigator()!!.register()
+    }
+
+    fun registerUser(userName:String, pass: String){
+        registerApi.register(userName,pass)
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe({it->
@@ -55,10 +56,5 @@ constructor(val loginApi: LoginApi): ViewModel() {
 
             })
     }
-
-    fun isEmailAndPasswordValid() {
-        getNavigator()!!.login()
-    }
-
 
 }

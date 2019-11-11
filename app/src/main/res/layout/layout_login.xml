@@ -123,6 +123,7 @@
                 android:textStyle="bold"
                 android:textColor="@color/colorBlack"
                 android:textSize="18dp"
+                android:id="@+id/txtForgotPass"
                 android:paddingTop="20dp"
                 android:layout_height="wrap_content"/>
         </LinearLayout>

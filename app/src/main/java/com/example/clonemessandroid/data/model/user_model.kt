@@ -5,7 +5,7 @@ import android.os.Parcelable
 import com.google.gson.annotations.Expose
 import com.google.gson.annotations.SerializedName
 
-class UserModel() :Parcelable{
+class UserModel() : Parcelable{
     @SerializedName("username")
     @Expose
     var username:String?=null
@@ -19,9 +19,6 @@ class UserModel() :Parcelable{
     var avatar:String?=null
 
 
-    @SerializedName("status")
-    @Expose
-    var status:String?=null
 
 
 
@@ -31,22 +28,29 @@ class UserModel() :Parcelable{
 
     @SerializedName("friends")
     @Expose
-    var friends:ArrayList<String>?=null
+    var friends:List<String>?=null
+
+
+    @SerializedName("active")
+    @Expose
+    var active:Boolean?=null
 
     constructor(parcel: Parcel) : this() {
         username = parcel.readString()
         fullname = parcel.readString()
         avatar = parcel.readString()
-        status = parcel.readString()
         message = parcel.readValue(Boolean::class.java.classLoader) as? Boolean
+        friends = parcel.createStringArrayList()
+        active = parcel.readValue(Boolean::class.java.classLoader) as? Boolean
     }
 
     override fun writeToParcel(parcel: Parcel, flags: Int) {
         parcel.writeString(username)
         parcel.writeString(fullname)
         parcel.writeString(avatar)
-        parcel.writeString(status)
         parcel.writeValue(message)
+        parcel.writeStringList(friends)
+        parcel.writeValue(active)
     }
 
     override fun describeContents(): Int {
