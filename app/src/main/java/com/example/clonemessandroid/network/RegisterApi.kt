@@ -7,7 +7,7 @@ import retrofit2.http.FormUrlEncoded
 import retrofit2.http.POST
 
 interface RegisterApi{
-    @POST("register")
+    @POST("user")
     @FormUrlEncoded
     abstract fun register(@Field("username") name:String, @Field("password") password:String) : Observable<UserModel>
 }

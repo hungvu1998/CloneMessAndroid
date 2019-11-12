@@ -32,6 +32,7 @@ import androidx.recyclerview.widget.DividerItemDecoration
 import android.app.Activity
 import android.content.Context
 import android.view.inputmethod.InputMethodManager
+import com.example.clonemessandroid.ui.profile.ProfileActivity
 
 
 class MessageFragment : DaggerFragment(),RecyclerClickItem,OnBack{
@@ -74,6 +75,11 @@ class MessageFragment : DaggerFragment(),RecyclerClickItem,OnBack{
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
         (activity as HomeActivity).setOnBackListener(this)
+        profile_image?.setOnClickListener {
+            val intent= Intent(context, ProfileActivity::class.java)
+            intent.putExtra("userModel",userCurrent)
+            startActivity(intent)
+        }
         homeViewModel.liveDataUserModel.observe(this, Observer {it->
             userCurrent=it
             Picasso.get().load(it.avatar).into(profile_image)
