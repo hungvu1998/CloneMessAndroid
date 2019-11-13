@@ -32,16 +32,28 @@ import androidx.recyclerview.widget.DividerItemDecoration
 import android.app.Activity
 import android.content.Context
 import android.view.inputmethod.InputMethodManager
+import com.example.clonemessandroid.ui.detail_chat.DetailChatActivity
 import com.example.clonemessandroid.ui.profile.ProfileActivity
 
 
 class MessageFragment : DaggerFragment(),RecyclerClickItem,OnBack{
 
 
-    override fun doThis(array: ArrayList<Stories>) {
-        val intent = Intent(activity,StoriesDetailActivity::class.java)
-        intent.putParcelableArrayListExtra("listStories",array)
+    override fun doThis(userModelFriend: UserModel) {
+        var idChat:String?=null
+        for(item in userCurrent.chats!!){
+            for(item2 in userModelFriend.chats!!){
+                if(item2 == item){
+                    idChat=item2
+                    break
+                }
+
+            }
+        }
+        val intent= Intent(context, DetailChatActivity::class.java)
+        intent.putExtra("idChat",idChat)
         startActivity(intent)
+
     }
 
     @Inject
@@ -77,7 +89,7 @@ class MessageFragment : DaggerFragment(),RecyclerClickItem,OnBack{
         (activity as HomeActivity).setOnBackListener(this)
         profile_image?.setOnClickListener {
             val intent= Intent(context, ProfileActivity::class.java)
-            intent.putExtra("userModel",userCurrent)
+            intent.putExtra("userName",userCurrent.username)
             startActivity(intent)
         }
         homeViewModel.liveDataUserModel.observe(this, Observer {it->

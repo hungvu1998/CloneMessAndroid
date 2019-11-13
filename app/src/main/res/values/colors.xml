@@ -16,6 +16,8 @@
 
     <color name="colorgray">#EEEEEE</color>
 
+
+    <color name="colorgrayBold">#E0C5C5</color>
     <color name="colorgrabyBold">#A39696</color>
 
 </resources>

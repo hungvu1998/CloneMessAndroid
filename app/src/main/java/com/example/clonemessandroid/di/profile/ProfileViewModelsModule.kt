@@ -12,5 +12,5 @@ abstract class ProfileViewModelsModule {
     @Binds
     @IntoMap
     @ViewModelKey(ProfileViewModel::class)
-    abstract fun bindAuthViewModel(loginViewModel: ProfileViewModel): ViewModel
+    abstract fun bindLoginViewModel(profileViewModel: ProfileViewModel): ViewModel
 }

@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:background="@color/colorgray"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent">
+    <LinearLayout
+        android:background="@color/colorWhite"
+        android:orientation="horizontal" android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <LinearLayout
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            >
+
+            <ImageView
+                android:id="@+id/img_back"
+                android:layout_width="match_parent"
+                android:layout_height="35dp"
+                android:layout_gravity="center"
+                android:src="@drawable/ic_keyboard_arrow_left_black_24dp" />
+        </LinearLayout>
+        <TextView
+            android:layout_weight="1"
+            android:layout_width='0dp'
+            android:text="Full name"
+            android:textColor="@color/colorBlack"
+            android:gravity="center"
+            android:paddingLeft="10dp"
+            android:textSize="18dp"
+            android:textStyle="bold"
+            android:layout_height="match_parent"/>
+        <TextView
+            android:layout_width='60dp'
+            android:text="Lưu"
+            android:id="@+id/txtLuu"
+            android:textColor="@color/colorgrabyBold"
+            android:gravity="center"
+            android:paddingLeft="10dp"
+            android:textSize="18dp"
+            android:layout_height="match_parent"/>
+
+
+    </LinearLayout>
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+            <EditText
+                android:layout_width="match_parent"
+                android:background="@color/colorWhite"
+                android:layout_marginTop="20dp"
+                android:padding="10dp"
+                android:id="@+id/edtFullName"
+                android:layout_height="wrap_content"/>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:paddingTop="30dp"
+                android:gravity="start"
+                android:textSize="16dp"
+                android:paddingRight="10dp"
+                android:paddingLeft="10dp"
+                android:text="Tên người dùng của bạn sẽ trở thành một phần trong liên kết tùy chỉnh. Với liên kết này, mọi người có thể đi đến trang cá nhân Facebook của bản hay liên hệ với bạn trên Messenger"
+                android:layout_height="wrap_content"/>
+        </LinearLayout>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="100dp">
+            <ProgressBar
+                android:id="@+id/progress_bar"
+                android:visibility="gone"
+                android:layout_gravity="center"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"/>
+        </LinearLayout>
+    </FrameLayout>
+
+
+</LinearLayout>

@@ -19,9 +19,6 @@ class UserModel() : Parcelable{
     var avatar:String?=null
 
 
-
-
-
     @SerializedName("message")
     @Expose
     var message:Boolean?=null
@@ -30,6 +27,9 @@ class UserModel() : Parcelable{
     @Expose
     var friends:List<String>?=null
 
+    @SerializedName("chats")
+    @Expose
+    var chats:List<String>?=null
 
     @SerializedName("active")
     @Expose
