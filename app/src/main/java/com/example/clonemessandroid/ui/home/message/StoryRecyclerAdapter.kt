@@ -77,7 +77,10 @@ class StoryRecyclerAdapter(var recyclerClickItem: RecyclerClickItem) : RecyclerV
                         story_user.visibility=View.VISIBLE
                         user_active.visibility=View.GONE
                         Picasso.get().load(userModel.avatar!!).into(story_user)
-                        recyclerClickItem.doThis(userModel)
+
+                        story_user.setOnClickListener {
+                            recyclerClickItem.doThis(userModel)
+                        }
                     }
 
 

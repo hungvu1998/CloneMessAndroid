@@ -24,6 +24,9 @@ class  ChatDetailModel{
     @SerializedName("timestamp")
     @Expose
     var timestamp:Long?=null
+
+
+    var idChat :String ?=null
 }
 
 

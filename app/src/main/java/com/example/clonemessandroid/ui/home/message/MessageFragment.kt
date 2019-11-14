@@ -52,6 +52,8 @@ class MessageFragment : DaggerFragment(),RecyclerClickItem,OnBack{
         }
         val intent= Intent(context, DetailChatActivity::class.java)
         intent.putExtra("idChat",idChat)
+        intent.putExtra("to",userModelFriend.username)
+        intent.putExtra("from",userCurrent.username)
         startActivity(intent)
 
     }

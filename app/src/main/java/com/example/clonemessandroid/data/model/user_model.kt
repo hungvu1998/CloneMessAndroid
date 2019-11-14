@@ -42,6 +42,7 @@ class UserModel() : Parcelable{
         message = parcel.readValue(Boolean::class.java.classLoader) as? Boolean
         friends = parcel.createStringArrayList()
         active = parcel.readValue(Boolean::class.java.classLoader) as? Boolean
+        chats = parcel.createStringArrayList()
     }
 
     override fun writeToParcel(parcel: Parcel, flags: Int) {
@@ -51,6 +52,7 @@ class UserModel() : Parcelable{
         parcel.writeValue(message)
         parcel.writeStringList(friends)
         parcel.writeValue(active)
+        parcel.writeStringList(chats)
     }
 
     override fun describeContents(): Int {
