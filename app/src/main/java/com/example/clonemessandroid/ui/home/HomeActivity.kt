@@ -9,9 +9,13 @@ import com.bumptech.glide.RequestManager
 import com.example.clonemessandroid.R
 import com.example.clonemessandroid.data.model.UserModel
 import com.example.clonemessandroid.viewmodels.ViewModelProvidersFactory
+import com.github.nkzawa.emitter.Emitter
+import com.github.nkzawa.socketio.client.IO
 import com.google.android.material.bottomnavigation.BottomNavigationView
+import com.google.gson.Gson
 import dagger.android.support.DaggerAppCompatActivity
 import kotlinx.android.synthetic.main.layout_home.*
+import org.json.JSONObject
 import javax.inject.Inject
 
 class HomeActivity : DaggerAppCompatActivity(),BottomNavigationView.OnNavigationItemSelectedListener{
@@ -27,11 +31,16 @@ class HomeActivity : DaggerAppCompatActivity(),BottomNavigationView.OnNavigation
     lateinit var adapter: ViewPageHomeAdapter
     lateinit var userModel:UserModel
     var listUser:ArrayList<UserModel> = ArrayList()
+
     lateinit var onBack :OnBack
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.layout_home)
         userModel= intent.getParcelableExtra("userModel")
+
+
+
+
 
         homeViewModel= ViewModelProviders.of(this,providerFactory).get(HomeViewModel::class.java)
 
@@ -75,6 +84,8 @@ class HomeActivity : DaggerAppCompatActivity(),BottomNavigationView.OnNavigation
         super.onBackPressed()
 
     }
+
+
     fun methodOnBack(){
         super.onBackPressed()
     }

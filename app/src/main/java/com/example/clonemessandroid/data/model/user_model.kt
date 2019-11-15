@@ -29,7 +29,7 @@ class UserModel() : Parcelable{
 
     @SerializedName("chats")
     @Expose
-    var chats:List<String>?=null
+    var chats:ArrayList<String>?=null
 
     @SerializedName("active")
     @Expose

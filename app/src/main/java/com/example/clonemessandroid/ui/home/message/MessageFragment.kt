@@ -32,8 +32,16 @@ import androidx.recyclerview.widget.DividerItemDecoration
 import android.app.Activity
 import android.content.Context
 import android.view.inputmethod.InputMethodManager
+import com.example.clonemessandroid.data.model.ChatModel
 import com.example.clonemessandroid.ui.detail_chat.DetailChatActivity
 import com.example.clonemessandroid.ui.profile.ProfileActivity
+import com.github.nkzawa.emitter.Emitter
+import com.github.nkzawa.socketio.client.IO
+import com.google.gson.Gson
+import io.reactivex.Observable
+import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.schedulers.Schedulers
+import org.json.JSONObject
 
 
 class MessageFragment : DaggerFragment(),RecyclerClickItem,OnBack{
@@ -53,6 +61,7 @@ class MessageFragment : DaggerFragment(),RecyclerClickItem,OnBack{
         val intent= Intent(context, DetailChatActivity::class.java)
         intent.putExtra("idChat",idChat)
         intent.putExtra("to",userModelFriend.username)
+        intent.putExtra("imgFriend",userModelFriend.avatar)
         intent.putExtra("from",userCurrent.username)
         startActivity(intent)
 
@@ -68,9 +77,14 @@ class MessageFragment : DaggerFragment(),RecyclerClickItem,OnBack{
     var listFriend: ArrayList<UserModel> = ArrayList()
 
     var listFriend2: ArrayList<UserModel> = ArrayList()
+
+    var listChatModel :ArrayList<ChatModel> = ArrayList()
     lateinit var userCurrent : UserModel
     lateinit var adapter: StoryRecyclerAdapter
     lateinit var adapterFriend: FriendRecyclerAdapter
+    lateinit var adapterListChat : ListChatRecyclerAdapter
+
+    private var socket = IO.socket("https://clonemessage.herokuapp.com/")
     val REQUEST_PERMISSION_CAMERA=5
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -89,6 +103,7 @@ class MessageFragment : DaggerFragment(),RecyclerClickItem,OnBack{
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
         (activity as HomeActivity).setOnBackListener(this)
+
         profile_image?.setOnClickListener {
             val intent= Intent(context, ProfileActivity::class.java)
             intent.putExtra("userName",userCurrent.username)
@@ -97,8 +112,14 @@ class MessageFragment : DaggerFragment(),RecyclerClickItem,OnBack{
         homeViewModel.liveDataUserModel.observe(this, Observer {it->
             userCurrent=it
             Picasso.get().load(it.avatar).into(profile_image)
+
             it.friends?.let { it1 -> messageViewModel.getProfileFriend(it1) }
 
+            var userModelNew= UserModel()
+            userModelNew.username=userCurrent.username
+            val gson = Gson()
+            val json = gson.toJson(userModelNew)
+            socket.emit("username",json)
         })
         messageViewModel.liveDataFriend.observe(this, Observer {it->
             listFriend.add(it)
@@ -108,7 +129,46 @@ class MessageFragment : DaggerFragment(),RecyclerClickItem,OnBack{
             }
             if(listFriend2.size == userCurrent.friends!!.size){
                 adapterFriend.setFriendList(listFriend2)
+                Observable.fromIterable(userCurrent.chats)
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe{it->
+                        messageViewModel.getListChat(it)
+
+                    }
+
             }
+
+        })
+
+        messageViewModel.liveDataChatModel.observe(this, Observer { it->
+
+
+            var chatModel = ChatModel()
+            chatModel._id = it._id
+            chatModel.messages= it.messages!!.sortedByDescending {it.timestamp }
+            if (chatModel.messages!![0].from == userCurrent.username){
+                for(item in listFriend2){
+                    if(item.username == chatModel.messages!![0].to){
+                       chatModel.userFriend=item
+
+                        break
+                    }
+                }
+
+            }
+            else{
+                for(item in listFriend2){
+                    if(item.username == chatModel.messages!![0].from){
+                        chatModel.userFriend=item
+
+                        break
+                    }
+                }
+
+            }
+
+            adapterListChat.addItemArrayListChat(chatModel)
 
         })
 
@@ -116,6 +176,9 @@ class MessageFragment : DaggerFragment(),RecyclerClickItem,OnBack{
             permission()
         }
 
+
+
+        socket.on("message", onNewMessage)
 
         edtSearchFriend?.onFocusChangeListener = View.OnFocusChangeListener { view, hasFocus ->
             if (hasFocus) {
@@ -165,10 +228,64 @@ class MessageFragment : DaggerFragment(),RecyclerClickItem,OnBack{
         )
 
         initRecyclerView()
+        initRecyclerViewListChat()
         initRecyclerViewFriend()
         subscribeObservers()
     }
+    private val onNewMessage =
+        Emitter.Listener {
 
+            activity?.runOnUiThread {
+                var _isExist = false
+                val data= it[0] as JSONObject
+                Log.d("kiemtra",""+data)
+                if(userCurrent.chats!=null){
+                    for (item in userCurrent.chats!!) {
+                        if (item == data["idChat"].toString()){
+                            _isExist=true
+                            break
+                        }
+                        _isExist=false
+                    }
+                    if(_isExist){
+
+                    }
+                    else{
+                        userCurrent.chats?.add(data["idChat"].toString())
+
+                        if(data["from"].toString() == userCurrent.username){
+                            for(i in 0 until listFriend2.size){
+                                if(listFriend2[i].username==data["to"].toString()){
+                                    listFriend2[i].chats?.add(data["idChat"].toString())
+                                    break
+                                }
+                            }
+                        }
+                        else{
+                            for(i in 0 until listFriend2.size){
+                                if(listFriend2[i].username==data["from"].toString()){
+                                    listFriend2[i].chats?.add(data["idChat"].toString())
+                                    break
+                                }
+                            }
+                        }
+
+                        messageViewModel.getListChat(data["idChat"].toString())
+                    }
+                }
+
+                //                idChat= data["idChat"].toString()
+                //                var chatDetailModel = ChatDetailModel()
+                //                chatDetailModel.idChat=idChat
+                //                chatDetailModel.content=data["content"].toString()
+                //                chatDetailModel.from=data["from"].toString()
+                //                chatDetailModel.to=data["to"].toString()
+                //                chatDetailModel.type= data["type"] as Int
+                //
+                //                viewModel.liveDataChat.value= chatDetailModel
+            }
+
+        }
 
 
     fun subscribeObservers(){
@@ -181,6 +298,12 @@ class MessageFragment : DaggerFragment(),RecyclerClickItem,OnBack{
         val layoutManager=LinearLayoutManager(activity,LinearLayoutManager.HORIZONTAL, false)
         recyclerListStory?.layoutManager = layoutManager
         recyclerListStory?.adapter = adapter
+    }
+    private fun initRecyclerViewListChat() {
+        adapterListChat= ListChatRecyclerAdapter()
+        val layoutManager=LinearLayoutManager(activity,LinearLayoutManager.VERTICAL, false)
+        recyclerListMess?.layoutManager = layoutManager
+        recyclerListMess?.adapter = adapterListChat
     }
 
 
@@ -207,7 +330,13 @@ class MessageFragment : DaggerFragment(),RecyclerClickItem,OnBack{
         val intent =  Intent("android.media.action.IMAGE_CAPTURE")
         startActivity(intent)
     }
-    override fun onBack() {
+
+    override fun onDestroy() {
+        super.onDestroy()
+        Log.d("kiemtra","destroy")
+        socket.disconnect()
+    }
+    override fun onBack(){
         if(!edtSearchFriend?.hasFocus()!!){
             (activity as HomeActivity).methodOnBack()
         }

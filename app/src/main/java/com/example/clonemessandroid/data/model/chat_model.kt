@@ -19,7 +19,7 @@ class  ChatDetailModel{
 
     @SerializedName("type")
     @Expose
-    var type:Long?=null
+    var type:Int?=null
 
     @SerializedName("timestamp")
     @Expose
@@ -40,5 +40,7 @@ class ChatModel{
     @Expose
     var messages:List<ChatDetailModel>?=null
 
-
+    var userFriend:UserModel ?=null
 }
+
+

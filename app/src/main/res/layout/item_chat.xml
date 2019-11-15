@@ -2,6 +2,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:background="@color/colorWhite"
+    android:padding="10dp"
     android:orientation="horizontal" android:layout_width="match_parent"
     android:layout_height="wrap_content">
 
@@ -20,6 +21,7 @@
        <TextView
            android:text="Alessia Champlin"
            android:textSize="20dp"
+           android:id="@+id/txtNameFriend"
            android:textColor="@color/colorBlack"
            android:textStyle="bold"
            android:paddingLeft="10dp"
@@ -31,6 +33,7 @@
            android:layout_width="match_parent"
            android:layout_height="match_parent">
            <TextView
+               android:id="@+id/txtChatLast"
                android:text="Hello How are you "
                android:maxLength="15"
                android:paddingLeft="10dp"
@@ -45,6 +48,7 @@
                <TextView
                    android:text="03:02 AM"
                    android:textSize="16dp"
+                   android:id="@+id/txtTimeLast"
                    android:layout_width="wrap_content"
                    android:layout_height="match_parent"/>
                <LinearLayout

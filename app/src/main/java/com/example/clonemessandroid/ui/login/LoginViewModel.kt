@@ -51,8 +51,8 @@ constructor(val loginApi: LoginApi): ViewModel() {
                 }
 
             },{it->
-
-
+                Log.d("kiemtra","Erro")
+                Log.d("kiemtra",""+it.message)
             })
     }
 
