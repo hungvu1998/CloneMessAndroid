@@ -63,6 +63,7 @@ class MessageFragment : DaggerFragment(),RecyclerClickItem,OnBack{
         intent.putExtra("to",userModelFriend.username)
         intent.putExtra("imgFriend",userModelFriend.avatar)
         intent.putExtra("from",userCurrent.username)
+        intent.putExtra("active",userModelFriend.active)
         startActivity(intent)
 
     }
@@ -84,7 +85,7 @@ class MessageFragment : DaggerFragment(),RecyclerClickItem,OnBack{
     lateinit var adapterFriend: FriendRecyclerAdapter
     lateinit var adapterListChat : ListChatRecyclerAdapter
 
-    private var socket = IO.socket("https://clonemessage.herokuapp.com/")
+     var socket = IO.socket("https://clonemessage.herokuapp.com/")
     val REQUEST_PERMISSION_CAMERA=5
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -104,6 +105,7 @@ class MessageFragment : DaggerFragment(),RecyclerClickItem,OnBack{
         super.onActivityCreated(savedInstanceState)
         (activity as HomeActivity).setOnBackListener(this)
 
+        socket.connect()
         profile_image?.setOnClickListener {
             val intent= Intent(context, ProfileActivity::class.java)
             intent.putExtra("userName",userCurrent.username)
@@ -238,7 +240,6 @@ class MessageFragment : DaggerFragment(),RecyclerClickItem,OnBack{
             activity?.runOnUiThread {
                 var _isExist = false
                 val data= it[0] as JSONObject
-                Log.d("kiemtra",""+data)
                 if(userCurrent.chats!=null){
                     for (item in userCurrent.chats!!) {
                         if (item == data["idChat"].toString()){
@@ -248,6 +249,12 @@ class MessageFragment : DaggerFragment(),RecyclerClickItem,OnBack{
                         _isExist=false
                     }
                     if(_isExist){
+                        for(i in 0 until adapterListChat.arrayList.size){
+                            if (adapterListChat.arrayList[i]._id== data["idChat"].toString() ){
+                                adapterListChat.arrayList.removeAt(i)
+                                break
+                            }
+                        }
 
                     }
                     else{
@@ -270,8 +277,10 @@ class MessageFragment : DaggerFragment(),RecyclerClickItem,OnBack{
                             }
                         }
 
-                        messageViewModel.getListChat(data["idChat"].toString())
+
                     }
+
+                    messageViewModel.getListChat(data["idChat"].toString())
                 }
 
                 //                idChat= data["idChat"].toString()
@@ -300,7 +309,7 @@ class MessageFragment : DaggerFragment(),RecyclerClickItem,OnBack{
         recyclerListStory?.adapter = adapter
     }
     private fun initRecyclerViewListChat() {
-        adapterListChat= ListChatRecyclerAdapter()
+        adapterListChat= ListChatRecyclerAdapter(this)
         val layoutManager=LinearLayoutManager(activity,LinearLayoutManager.VERTICAL, false)
         recyclerListMess?.layoutManager = layoutManager
         recyclerListMess?.adapter = adapterListChat
@@ -333,7 +342,7 @@ class MessageFragment : DaggerFragment(),RecyclerClickItem,OnBack{
 
     override fun onDestroy() {
         super.onDestroy()
-        Log.d("kiemtra","destroy")
+        Log.d("kiemtra","dis")
         socket.disconnect()
     }
     override fun onBack(){

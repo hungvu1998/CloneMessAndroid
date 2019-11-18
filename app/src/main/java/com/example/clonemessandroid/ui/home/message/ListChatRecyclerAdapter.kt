@@ -4,14 +4,18 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.clonemessandroid.R
 import com.example.clonemessandroid.data.model.ChatModel
 import com.squareup.picasso.Picasso
 import de.hdodenhof.circleimageview.CircleImageView
+import java.text.SimpleDateFormat
+import java.util.*
+import kotlin.collections.ArrayList
 
-class ListChatRecyclerAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>(){
+class ListChatRecyclerAdapter(var recyclerClickItem: RecyclerClickItem) : RecyclerView.Adapter<RecyclerView.ViewHolder>(){
 
     var arrayList: ArrayList<ChatModel> = ArrayList()
 
@@ -22,7 +26,7 @@ class ListChatRecyclerAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>(){
     }
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
-        (holder as PostViewHolder).bind(arrayList[position])
+        (holder as PostViewHolder).bind(arrayList[position],recyclerClickItem)
 
     }
 
@@ -52,18 +56,30 @@ class ListChatRecyclerAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>(){
         private var txtNameFriend:TextView = itemView.findViewById(R.id.txtNameFriend)
         private var txtChatLast:TextView=itemView.findViewById(R.id.txtChatLast)
         private var txtTimeLast:TextView = itemView.findViewById(R.id.txtTimeLast)
-
-        fun bind(chatModel: ChatModel) {
+        private var layoutChat:LinearLayout = itemView.findViewById(R.id.layout_chat)
+        fun bind(chatModel: ChatModel,recyclerClickItem: RecyclerClickItem) {
             if (chatModel.userFriend!=null){
                 txtNameFriend.text=chatModel.userFriend!!.username
                 Picasso.get().load(chatModel.userFriend!!.avatar).into(profile_image)
+                layoutChat.setOnClickListener {
+                    recyclerClickItem.doThis(chatModel.userFriend!!)
+                }
+                txtTimeLast.setText(getDateTime(chatModel.messages!![0].timestamp!!))
             }
             txtChatLast.setText(""+ chatModel.messages!![0].content)
 
 
         }
 
-
+        private fun getDateTime(s: Long): String? {
+            try {
+                val sdf = SimpleDateFormat("HH:mm a")
+                val netDate = Date(s)
+                return sdf.format(netDate)
+            } catch (e: Exception) {
+                return e.toString()
+            }
+        }
 
     }
 }

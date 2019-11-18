@@ -3,6 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:background="@color/colorWhite"
     android:padding="10dp"
+    android:id="@+id/layout_chat"
     android:orientation="horizontal" android:layout_width="match_parent"
     android:layout_height="wrap_content">
 
@@ -10,7 +11,6 @@
         android:id="@+id/profile_image"
         android:layout_width="80dp"
         android:layout_height="80dp"
-        android:src="@drawable/image_profile"
         app:civ_border_color="@color/colorFB"
         app:civ_border_width="4dp" />
 
@@ -19,7 +19,6 @@
        android:orientation="vertical"
        android:layout_height="match_parent">
        <TextView
-           android:text="Alessia Champlin"
            android:textSize="20dp"
            android:id="@+id/txtNameFriend"
            android:textColor="@color/colorBlack"
@@ -34,7 +33,7 @@
            android:layout_height="match_parent">
            <TextView
                android:id="@+id/txtChatLast"
-               android:text="Hello How are you "
+
                android:maxLength="15"
                android:paddingLeft="10dp"
                android:textSize="16dp"
@@ -46,7 +45,6 @@
                android:layout_width="0dp"
                android:layout_height="match_parent">
                <TextView
-                   android:text="03:02 AM"
                    android:textSize="16dp"
                    android:id="@+id/txtTimeLast"
                    android:layout_width="wrap_content"
@@ -56,10 +54,10 @@
                    android:gravity="center"
                    android:layout_height="match_parent">
                    <LinearLayout
-                       android:layout_width="15dp"
+                       android:layout_width="10dp"
                        android:layout_gravity="end"
                        android:background="@drawable/border_circle_active"
-                       android:layout_height="15dp"/>
+                       android:layout_height="10dp"/>
                </LinearLayout>
            </LinearLayout>
 

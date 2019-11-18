@@ -1,5 +1,6 @@
 package com.example.clonemessandroid.ui.login
 
+import android.annotation.SuppressLint
 import android.text.TextUtils
 import android.util.Log
 import android.util.Patterns
@@ -37,11 +38,12 @@ constructor(val loginApi: LoginApi): ViewModel() {
 
     }
 
+    @SuppressLint("CheckResult")
     fun loginNormal(userName: String, pass: String) {
         loginApi.login(userName,pass)
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
-            .subscribe({it->
+            .subscribe({ it->
                 if(it.message!!){
 
                     getNavigator()!!.succes(true,it)

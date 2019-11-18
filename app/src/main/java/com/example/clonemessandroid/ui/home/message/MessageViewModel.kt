@@ -46,7 +46,6 @@ class MessageViewModel @Inject constructor(val messageApi: MessageApi,val detail
 
     @SuppressLint("CheckResult")
     fun getListChat(idChat :String){
-        Log.d("kiemta",""+idChat)
                 detailChatApi.getListChat(idChat)
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
@@ -59,4 +58,6 @@ class MessageViewModel @Inject constructor(val messageApi: MessageApi,val detail
 
 
     }
+
+
 }
