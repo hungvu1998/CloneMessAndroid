@@ -13,6 +13,8 @@ import com.example.clonemessandroid.network.MessageApi
 import io.reactivex.Observable
 import io.reactivex.Scheduler
 import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.rxkotlin.subscribeBy
+import io.reactivex.rxkotlin.toObservable
 import io.reactivex.schedulers.Schedulers
 import javax.inject.Inject
 
@@ -27,21 +29,29 @@ class MessageViewModel @Inject constructor(val messageApi: MessageApi,val detail
         Observable.fromIterable(listFriend)
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
-            .subscribe { idFriend ->
+            .subscribe ({ idFriend ->
                 messageApi.getUserTest(idFriend)
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe({it->
                         if(it.message!!){
-
+                            Log.d("kiemtra",""+it.username)
                             liveDataFriend.value=it
                         }
                         else{
                         }
                     },{it->
+                        Log.d("kiemtra",""+it.message)
+                    },{
+                        Log.d("kiemtra","done")
                     })
 
-            }
+            },{erro->
+                Log.d("kiemtra",""+erro.message)
+
+            },{
+                Log.d("kiemtra","done2")
+            })
     }
 
     @SuppressLint("CheckResult")
@@ -51,6 +61,7 @@ class MessageViewModel @Inject constructor(val messageApi: MessageApi,val detail
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe({
                         liveDataChatModel.value=it
+
                     },{it->
                         Log.d("kiemtra",""+it)
 

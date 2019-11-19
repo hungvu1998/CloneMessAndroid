@@ -1,5 +1,6 @@
 package com.example.clonemessandroid.ui.login
 
+import android.annotation.SuppressLint
 import android.content.Intent
 import android.graphics.drawable.Drawable
 import android.os.Bundle
@@ -17,9 +18,15 @@ import com.example.clonemessandroid.ui.register.RegisterActivity
 import com.example.clonemessandroid.viewmodels.ViewModelProvidersFactory
 
 import dagger.android.support.DaggerAppCompatActivity
+import io.reactivex.Observable
+import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.rxkotlin.subscribeBy
+import io.reactivex.rxkotlin.toObservable
+import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.layout_login.*
 import javax.inject.Inject
-import android.view.View.OnFocusChangeListener
+
+
 
 
 
@@ -50,6 +57,37 @@ class LoginActivity : DaggerAppCompatActivity(),LoginNavigator {
 
 
         subcribeObservers()
+
+
+
+        //test()
+    }
+
+    @SuppressLint("CheckResult")
+    fun test(){
+        val list = listOf("5", "3", "6", "8", "8")
+
+        list.toObservable() // extens
+
+            .subscribeOn(Schedulers.io())
+
+            // ion function for Iterables.
+            .map {it->
+                Log.d("kiemtramap",""+Thread.currentThread().name)
+                return@map it.toInt()
+
+            }
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribeBy(  // named a
+                // rguments for lambda Subscribers
+                onNext = {
+                    Log.d("kiemtrasubscribeBy",""+Thread.currentThread().name)
+                    Log.d("kiemtra",""+it)},
+                onError =  { Log.d("kiemtraLoi",""+it.message) },
+                onComplete = { Log.d("kiemtra","done") }
+            )
+
+
     }
 
 
@@ -87,19 +125,30 @@ class LoginActivity : DaggerAppCompatActivity(),LoginNavigator {
 
 
     override fun login() {
-        if (viewModel.isValidUser(edtEmail?.text.toString())){
-            if(viewModel.isValidPassWord(edtPass?.text.toString())){
-                viewModel.mIsValidUser.value = true
-                viewModel.mIsValidPass.value = true
-                viewModel.loginNormal(edtEmail?.text.toString(),edtPass?.text.toString())
+        Observable.just(edtEmail?.text.toString())
+            .compose(viewModel.lengthGreaterThanSix)
+            .compose(viewModel.verifyEmailPattern)
+            .subscribe({
+                Log.d("onNext",""+it)
+            },{
+                Log.d("onError",""+it.message)
+            },{
+                Log.d("onComplete","onComplete")
             }
-            else{
-                viewModel.mIsValidPass.value = false
-            }
-        }
-        else{
-            viewModel.mIsValidUser.value = false
-        }
+            )
+//        if (viewModel.isValidUser(edtEmail?.text.toString())){
+//            if(viewModel.isValidPassWord(edtPass?.text.toString())){
+//                viewModel.mIsValidUser.value = true
+//                viewModel.mIsValidPass.value = true
+//                viewModel.loginNormal(edtEmail?.text.toString(),edtPass?.text.toString())
+//            }
+//            else{
+//                viewModel.mIsValidPass.value = false
+//            }
+//        }
+//        else{
+//            viewModel.mIsValidUser.value = false
+//        }
     }
 
     override fun succes(boolean: Boolean,userModel: UserModel?) {

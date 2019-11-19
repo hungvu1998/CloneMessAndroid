@@ -7,6 +7,9 @@ import android.util.Patterns
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.example.clonemessandroid.network.LoginApi
+import io.reactivex.Observable
+import io.reactivex.ObservableTransformer
+import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
 //import com.google.firebase.database.*
@@ -35,9 +38,7 @@ constructor(val loginApi: LoginApi): ViewModel() {
     }
     fun isValidPassWord(pass:String): Boolean {
         return !TextUtils.isEmpty(pass)
-
     }
-
     @SuppressLint("CheckResult")
     fun loginNormal(userName: String, pass: String) {
         loginApi.login(userName,pass)
@@ -45,7 +46,6 @@ constructor(val loginApi: LoginApi): ViewModel() {
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe({ it->
                 if(it.message!!){
-
                     getNavigator()!!.succes(true,it)
                 }
                 else{
@@ -57,10 +57,54 @@ constructor(val loginApi: LoginApi): ViewModel() {
                 Log.d("kiemtra",""+it.message)
             })
     }
-
     fun isEmailAndPasswordValid() {
         getNavigator()!!.login()
+
     }
 
 
+     val lengthGreaterThanSix = ObservableTransformer<String, String> { observable ->
+         observable.flatMap {
+             Observable.just(it).map { it.trim() } // - abcdefg - |
+                 .filter { it.length > 6 }
+                 .singleOrError()
+                 .onErrorResumeNext {
+                     if (it is NoSuchElementException) {
+                         Single.error(Exception("Length should be greater than 6"))
+                     } else {
+                         Single.error(it)
+                     }
+                 }
+                 .toObservable()
+         }
+    }
+
+
+     val verifyEmailPattern = ObservableTransformer<String, String> { observable ->
+         observable.flatMap {
+             Observable.just(it)
+                 .map { it.trim() }
+                 .filter {
+                     Patterns.EMAIL_ADDRESS.matcher(it).matches()
+                 }
+                 .singleOrError()
+                 .onErrorResumeNext {
+                     if (it is NoSuchElementException) {
+                         Single.error(Exception("Email not valid"))
+                     } else {
+                         Single.error(it)
+                     }
+                 }
+                 .toObservable()
+         }
+    }
+    private inline fun retryWhenError(crossinline onError: (ex: Throwable) -> Unit): ObservableTransformer<String, String> = ObservableTransformer { observable ->
+        observable.retryWhen { errors ->
+            errors.flatMap {
+                onError(it)
+                Observable.just("")
+            }
+        }
+    }
 }
+
