@@ -16,6 +16,8 @@ import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.rxkotlin.subscribeBy
 import io.reactivex.rxkotlin.toObservable
 import io.reactivex.schedulers.Schedulers
+import org.json.JSONException
+import java.lang.RuntimeException
 import javax.inject.Inject
 
 class MessageViewModel @Inject constructor(val messageApi: MessageApi,val detailChatApi: DetailChatApi) : ViewModel() {
@@ -25,21 +27,18 @@ class MessageViewModel @Inject constructor(val messageApi: MessageApi,val detail
     var liveDataChatModel: MutableLiveData<ChatModel> = MutableLiveData()
     @SuppressLint("CheckResult")
     fun getProfileFriend(listFriend: List<String>){
-        var array : ArrayList<UserModel> = ArrayList()
         Observable.fromIterable(listFriend)
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe ({ idFriend ->
                 messageApi.getUserTest(idFriend)
                     .subscribeOn(Schedulers.io())
+                    .filter {
+                        it.message!=null
+                    }
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe({it->
-                        if(it.message!!){
-                            Log.d("kiemtra",""+it.username)
-                            liveDataFriend.value=it
-                        }
-                        else{
-                        }
+                        liveDataFriend.value=it
                     },{it->
                         Log.d("kiemtra",""+it.message)
                     },{
@@ -53,21 +52,21 @@ class MessageViewModel @Inject constructor(val messageApi: MessageApi,val detail
                 Log.d("kiemtra","done2")
             })
     }
-
     @SuppressLint("CheckResult")
     fun getListChat(idChat :String){
-                detailChatApi.getListChat(idChat)
-                    .subscribeOn(Schedulers.io())
-                    .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe({
-                        liveDataChatModel.value=it
+        detailChatApi.getListChat(idChat)
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribeBy (
+                onNext = {
+                    liveDataChatModel.value=it
+                },onError = {
+                    Log.d("kiemtra","Error" + it.message)
+                },
+                onComplete = {
 
-                    },{it->
-                        Log.d("kiemtra",""+it)
-
-                    })
-
-
+                }
+            )
     }
 
 

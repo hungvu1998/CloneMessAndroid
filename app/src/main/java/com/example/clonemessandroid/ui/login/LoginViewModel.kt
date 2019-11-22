@@ -42,6 +42,7 @@ constructor(val loginApi: LoginApi): ViewModel() {
     @SuppressLint("CheckResult")
     fun loginNormal(userName: String, pass: String) {
         loginApi.login(userName,pass)
+
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe({ it->
@@ -78,7 +79,6 @@ constructor(val loginApi: LoginApi): ViewModel() {
                  .toObservable()
          }
     }
-
 
      val verifyEmailPattern = ObservableTransformer<String, String> { observable ->
          observable.flatMap {

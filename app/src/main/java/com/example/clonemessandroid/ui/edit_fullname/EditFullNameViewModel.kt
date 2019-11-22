@@ -20,7 +20,6 @@ constructor(val editProfileApi: EditProfileApi) : ViewModel(){
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe({it->
                 if(it.message!!){
-
                     liveDataResult.value=true
                 }
                 else{

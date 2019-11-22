@@ -3,6 +3,7 @@ package com.example.clonemessandroid.ui.login
 import android.annotation.SuppressLint
 import android.content.Intent
 import android.graphics.drawable.Drawable
+import android.os.AsyncTask
 import android.os.Bundle
 import android.util.Log
 import android.view.View
@@ -60,36 +61,24 @@ class LoginActivity : DaggerAppCompatActivity(),LoginNavigator {
 
 
 
-        //test()
+       // test()
     }
 
     @SuppressLint("CheckResult")
     fun test(){
-        val list = listOf("5", "3", "6", "8", "8")
-
-        list.toObservable() // extens
-
-            .subscribeOn(Schedulers.io())
-
-            // ion function for Iterables.
+        val list = listOf("6", "8")
+        list.toObservable()
             .map {it->
-                Log.d("kiemtramap",""+Thread.currentThread().name)
+                Log.d("kiemtra","map1 - "+Thread.currentThread().name)
                 return@map it.toInt()
-
             }
-            .observeOn(AndroidSchedulers.mainThread())
             .subscribeBy(  // named a
                 // rguments for lambda Subscribers
-                onNext = {
-                    Log.d("kiemtrasubscribeBy",""+Thread.currentThread().name)
-                    Log.d("kiemtra",""+it)},
-                onError =  { Log.d("kiemtraLoi",""+it.message) },
+                onNext = { Log.d("kiemtra",""+it+" -"+Thread.currentThread().name) },
+                onError =  { Log.d("kiemtra","Erro - "+it.message) },
                 onComplete = { Log.d("kiemtra","done") }
             )
-
-
     }
-
 
     fun showProgressBar(isShowing:Boolean){
         if(isShowing){
@@ -124,31 +113,32 @@ class LoginActivity : DaggerAppCompatActivity(),LoginNavigator {
     }
 
 
+    @SuppressLint("CheckResult")
     override fun login() {
-        Observable.just(edtEmail?.text.toString())
-            .compose(viewModel.lengthGreaterThanSix)
-            .compose(viewModel.verifyEmailPattern)
-            .subscribe({
-                Log.d("onNext",""+it)
-            },{
-                Log.d("onError",""+it.message)
-            },{
-                Log.d("onComplete","onComplete")
+//        Observable.just(edtEmail?.text.toString())
+//            .compose(viewModel.lengthGreaterThanSix)
+//            .compose(viewModel.verifyEmailPattern)
+//            .subscribe({
+//                Log.d("onNext",""+it)
+//            },{
+//                Log.d("onError",""+it.message)
+//            },{
+//                Log.d("onComplete","onComplete")
+//            }
+//            )
+        if (viewModel.isValidUser(edtEmail?.text.toString())){
+            if(viewModel.isValidPassWord(edtPass?.text.toString())){
+                viewModel.mIsValidUser.value = true
+                viewModel.mIsValidPass.value = true
+                viewModel.loginNormal(edtEmail?.text.toString(),edtPass?.text.toString())
             }
-            )
-//        if (viewModel.isValidUser(edtEmail?.text.toString())){
-//            if(viewModel.isValidPassWord(edtPass?.text.toString())){
-//                viewModel.mIsValidUser.value = true
-//                viewModel.mIsValidPass.value = true
-//                viewModel.loginNormal(edtEmail?.text.toString(),edtPass?.text.toString())
-//            }
-//            else{
-//                viewModel.mIsValidPass.value = false
-//            }
-//        }
-//        else{
-//            viewModel.mIsValidUser.value = false
-//        }
+            else{
+                viewModel.mIsValidPass.value = false
+            }
+        }
+        else{
+            viewModel.mIsValidUser.value = false
+        }
     }
 
     override fun succes(boolean: Boolean,userModel: UserModel?) {
@@ -162,4 +152,6 @@ class LoginActivity : DaggerAppCompatActivity(),LoginNavigator {
             onLoginSucce(userModel!!)
         }
     }
+
+
 }

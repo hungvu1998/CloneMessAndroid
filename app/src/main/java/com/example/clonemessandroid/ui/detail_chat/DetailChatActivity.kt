@@ -1,13 +1,24 @@
 package com.example.clonemessandroid.ui.detail_chat
 
+import android.Manifest
 import android.app.Activity
+import android.content.ContentResolver
 import android.content.Context
+import android.content.Intent
+import android.content.pm.PackageManager
+import android.database.Cursor
+import android.net.Uri
+import android.os.Build
 import android.os.Bundle
+import android.provider.MediaStore
 import android.text.Editable
 import android.text.TextWatcher
 import android.util.Log
 import android.view.View
 import android.view.inputmethod.InputMethodManager
+import androidx.annotation.RequiresApi
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -15,6 +26,7 @@ import com.bumptech.glide.Glide
 import com.example.clonemessandroid.R
 import com.example.clonemessandroid.data.model.ChatDetailModel
 import com.example.clonemessandroid.data.model.UserModel
+import com.example.clonemessandroid.util.ImageFilePath
 import com.example.clonemessandroid.viewmodels.ViewModelProvidersFactory
 import com.github.nkzawa.emitter.Emitter
 import com.github.nkzawa.socketio.client.IO
@@ -26,6 +38,7 @@ import kotlinx.android.synthetic.main.fragment_message.*
 import kotlinx.android.synthetic.main.layout_chat_detail.*
 import kotlinx.android.synthetic.main.progessbar_chat_detail.*
 import org.json.JSONObject
+import java.io.File
 import javax.inject.Inject
 
 class DetailChatActivity : DaggerAppCompatActivity (){
@@ -40,7 +53,9 @@ class DetailChatActivity : DaggerAppCompatActivity (){
     lateinit var imgFriend :String
     private var socket = IO.socket("https://clonemessage.herokuapp.com/")
     lateinit var adapter: DetailChatRecyclerAdapter
-
+    val REQUEST_PERMISSION_CAMERA=5
+    val REQUEST_PERMISSION_GALLERY=6
+    val PICK_IMAGE = 1
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.layout_chat_detail)
@@ -73,6 +88,12 @@ class DetailChatActivity : DaggerAppCompatActivity (){
         socket.on("message", onNewMessage)
         img_back?.setOnClickListener {
             finish()
+        }
+        imgCamera?.setOnClickListener{
+            permissionCamera()
+        }
+        imgPicture?.setOnClickListener {
+            permissionPicture()
         }
         img_send?.setOnClickListener {
             if(edtContent?.text.toString().trim()!="")
@@ -177,7 +198,9 @@ class DetailChatActivity : DaggerAppCompatActivity (){
 
         })
         viewModel.liveDataChat.observe(this, Observer { it->
-
+            if(it.timestamp==null){
+                it.timestamp= System.currentTimeMillis()
+            }
            adapter.addItemArralyListDetail(it)
             recyclerListChatDetail?.scrollToPosition(adapter.arrayList.size -1)
         })
@@ -204,6 +227,8 @@ class DetailChatActivity : DaggerAppCompatActivity (){
         val json = gson.toJson(chatDetailModel)
 
         socket.emit("message",json)
+
+        viewModel.liveDataChat.value= chatDetailModel
         edtContent?.setText("")
     }
     private fun initRecyclerView(){
@@ -217,6 +242,97 @@ class DetailChatActivity : DaggerAppCompatActivity (){
 
 
     }
+
+    fun permissionCamera(){
+        val checkPermissionExternalStorage:Int= ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA)
+        if(checkPermissionExternalStorage!= PackageManager.PERMISSION_GRANTED ){
+            ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.CAMERA), REQUEST_PERMISSION_CAMERA)
+        }
+        else{
+            succesPermissionCamera()
+        }
+    }
+    fun succesPermissionpicture(){
+        val intent = Intent()
+        intent.type = "image/*"
+        intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true)
+        intent.action = Intent.ACTION_GET_CONTENT
+        //intent.action = Intent.ACTION_PICK
+        startActivityForResult(Intent.createChooser(intent, "Select Picture"), PICK_IMAGE)
+        //startActivityForResult(intent,PICK_IMAGE)
+    }
+
+    @RequiresApi(Build.VERSION_CODES.JELLY_BEAN)
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (requestCode == PICK_IMAGE && resultCode == RESULT_OK && null != data) {
+            if (data.clipData != null) {
+                val count = data.clipData!!.itemCount
+                for (i in 0 until count) {
+                    val imageUri = data.clipData!!.getItemAt(i).uri
+                    Log.d("kiemtra",""+imageUri)
+                }
+            }
+            else if (data.data != null) {
+                val path = ImageFilePath.getPathFromUri(this,data.data!!)
+                val file = File(path)
+                viewModel.upLoadImage(file)
+
+            }
+        }
+    }
+
+    fun getRealPathFromURI(contentUri: Uri):String{
+        var result:String?=null
+        var cursor =contentResolver.query(contentUri,null,null,null,null)
+        if (cursor==null){
+            result=contentUri.path
+        }
+        else{
+            cursor.moveToFirst()
+            val index = cursor.getColumnIndex(MediaStore.Images.ImageColumns.DATA)
+            result = cursor.getString(index)
+            cursor.close()
+        }
+        return result!!
+
+    }
+
+    fun permissionPicture(){
+        val checkPermissionExternalStorage:Int= ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE)
+        if(checkPermissionExternalStorage!= PackageManager.PERMISSION_GRANTED ){
+            ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE), REQUEST_PERMISSION_GALLERY)
+        }
+        else{
+            succesPermissionpicture()
+        }
+    }
+    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        when (requestCode){
+            REQUEST_PERMISSION_CAMERA ->{
+                if((grantResults.isNotEmpty() &&  grantResults[0] == PackageManager.PERMISSION_GRANTED)){
+                    succesPermissionCamera()
+                }
+                else{
+
+                }
+            }
+            REQUEST_PERMISSION_GALLERY->{
+                if((grantResults.isNotEmpty() &&  grantResults[0] == PackageManager.PERMISSION_GRANTED)){
+                    succesPermissionpicture()
+                }
+                else{
+
+                }
+            }
+        }
+    }
+    fun succesPermissionCamera(){
+        val intent =  Intent("android.media.action.IMAGE_CAPTURE")
+        startActivity(intent)
+    }
+
     override fun onStop() {
         super.onStop()
         socket.disconnect()
@@ -225,16 +341,17 @@ class DetailChatActivity : DaggerAppCompatActivity (){
         Emitter.Listener {
             runOnUiThread {
                 val data= it[0] as JSONObject
-
                 idChat= data["idChat"].toString()
-                var chatDetailModel = ChatDetailModel()
-                chatDetailModel.idChat=idChat
-                chatDetailModel.content=data["content"].toString()
-                chatDetailModel.from=data["from"].toString()
-                chatDetailModel.to=data["to"].toString()
-                chatDetailModel.type= data["type"] as Int
-                chatDetailModel.timestamp= data["timestamp"] as Long
-                viewModel.liveDataChat.value= chatDetailModel
+                if(data["from"].toString() != from){
+                    var chatDetailModel = ChatDetailModel()
+                    chatDetailModel.idChat=idChat
+                    chatDetailModel.content=data["content"].toString()
+                    chatDetailModel.from=data["from"].toString()
+                    chatDetailModel.to=data["to"].toString()
+                    chatDetailModel.type= data["type"] as Int
+                    chatDetailModel.timestamp= data["timestamp"] as Long
+                    viewModel.liveDataChat.value= chatDetailModel
+                }
             }
         }
 }

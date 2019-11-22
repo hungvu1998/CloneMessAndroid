@@ -58,13 +58,14 @@
             android:layout_marginRight="20dp"
             android:layout_width="30dp"
             android:layout_height="30dp"
-            android:id="@+id/imgCamera"
+            android:id="@+id/imgPhone"
             android:layout_gravity="center"
             android:src="@drawable/ic_phone_black_24dp" />
         <ImageView
             android:layout_marginRight="5dp"
             android:layout_width="30dp"
             android:layout_gravity="center"
+            android:id="@+id/imgVideoCam"
             android:src="@drawable/ic_videocam_black_24dp"
             android:layout_height="30dp"/>
     </LinearLayout>
