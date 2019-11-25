@@ -13,12 +13,15 @@ import java.io.File
 import javax.inject.Inject
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
+import okhttp3.ResponseBody
 
 
 class DetailChatViewModel  @Inject
-constructor(val detailChatApi: DetailChatApi) : ViewModel(){
+constructor(val detailChatApi: DetailChatApi) : ViewModel() {
+
     var liveDataChat: MutableLiveData<ChatDetailModel> = MutableLiveData()
     var liveListChat :MutableLiveData<List<ChatDetailModel>> = MutableLiveData()
+    var livedataImgUpdaload :MutableLiveData<ResponseBody> = MutableLiveData()
     @SuppressLint("CheckResult")
     fun getListDetailChat(idChat:String){
         detailChatApi.getListChat(idChat)
@@ -26,13 +29,13 @@ constructor(val detailChatApi: DetailChatApi) : ViewModel(){
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe({it->
               liveListChat.value  =it.messages!!
-
             },{it->
                 Log.d("kiemtra",""+it)
             })
 
     }
 
+    @SuppressLint("CheckResult")
     fun upLoadImage(file:File){
         val requestFile = RequestBody.create(MediaType.parse("image/png"), file)
         val body = MultipartBody.Part.createFormData("files", file.name, requestFile)
@@ -40,7 +43,8 @@ constructor(val detailChatApi: DetailChatApi) : ViewModel(){
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe({it->
-               Log.d("kiemtra",""+it.string())
+
+                livedataImgUpdaload.value=it
 
             },{it->
                 Log.d("kiemtraLoi",""+it.message)

@@ -57,8 +57,11 @@ class DetailChatRecyclerAdapter(var context: Context, var usernameCurrent:String
         private var img_profile:CircleImageView = itemView.findViewById(R.id.img_profile)
         private var txtChat:TextView = itemView.findViewById(R.id.txtChat)
         private var txtTime:TextView = itemView.findViewById(R.id.txtTime)
-        private var img_chatdetail:ImageView =  itemView.findViewById(R.id.img_chatdetail)
+        private var img_story:ImageView =  itemView.findViewById(R.id.img_story)
         private var layout_chat:LinearLayout = itemView.findViewById(R.id.layout_chat)
+        private var layout_img:FrameLayout = itemView.findViewById(R.id.layout_img)
+        private var preview_image:ImageView =  itemView.findViewById(R.id.preview_image)
+
 
         fun bind(context: Context,chatDetailModel: ChatDetailModel,position:Int,usernameCurrent:String, imgFriend :String) {
             txtTime.visibility=View.GONE
@@ -76,7 +79,8 @@ class DetailChatRecyclerAdapter(var context: Context, var usernameCurrent:String
                 //text
                 txtChat.visibility=View.VISIBLE
                 layout_chat.visibility=View.VISIBLE
-                img_chatdetail.visibility=View.GONE
+                img_story.visibility=View.GONE
+                layout_img.visibility=View.GONE
                 txtChat.text = chatDetailModel.content
 
             }
@@ -84,13 +88,18 @@ class DetailChatRecyclerAdapter(var context: Context, var usernameCurrent:String
                 //Stiker
                 txtChat.visibility=View.GONE
                 layout_chat.visibility=View.GONE
-                img_chatdetail.visibility=View.VISIBLE
+                img_story.visibility=View.VISIBLE
+                layout_img.visibility=View.GONE
                 //Picasso.get().load(context.resources.getIdentifier(chatDetailModel.content,"drawable",context.packageName)).into(img_chatdetail)
-                Glide.with(context).load(context.resources.getIdentifier(chatDetailModel.content,"drawable",context.packageName)).into(img_chatdetail)
+                Glide.with(context).load(context.resources.getIdentifier(chatDetailModel.content,"drawable",context.packageName)).into(img_story)
             }
             else{
                 //image
-
+                txtChat.visibility=View.GONE
+                layout_chat.visibility=View.GONE
+                img_story.visibility=View.GONE
+                layout_img.visibility=View.VISIBLE
+                Picasso.get().load(chatDetailModel.content).into(preview_image)
             }
 
 

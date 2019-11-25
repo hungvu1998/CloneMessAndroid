@@ -2,6 +2,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical"
     android:padding="10dp"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
     <TextView
@@ -26,6 +27,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content">
             <LinearLayout
+
                 android:id="@+id/layout_chat"
                 android:padding="10dp"
                 android:background="@drawable/border_edittext_search"
@@ -39,11 +41,35 @@
             <ImageView
                 android:layout_width="100dp"
                 android:visibility="gone"
-                android:id="@+id/img_chatdetail"
+                android:id="@+id/img_story"
                 android:layout_height="100dp"/>
+
+            <FrameLayout
+                android:visibility="gone"
+                android:id="@+id/layout_img"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content">
+
+                <ImageView
+                    android:id="@+id/preview_image"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="#9FA8DA"
+                    android:scaleType="centerCrop" />
+                <FrameLayout
+                    android:id="@+id/preview_white_layer"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="#9CFFFFFF"
+                    android:visibility="gone" />
+                <TextView
+                    android:id="@+id/progress_text"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:textSize="20sp"
+                    tools:text="18%" />
+            </FrameLayout>
         </FrameLayout>
-
-
     </LinearLayout>
-
 </LinearLayout>

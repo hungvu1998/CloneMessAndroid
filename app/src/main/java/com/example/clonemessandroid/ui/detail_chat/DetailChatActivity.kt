@@ -56,9 +56,17 @@ class DetailChatActivity : DaggerAppCompatActivity (){
     val REQUEST_PERMISSION_CAMERA=5
     val REQUEST_PERMISSION_GALLERY=6
     val PICK_IMAGE = 1
+    var json:String?=null
+    override fun onStart() {
+        super.onStart()
+
+//        if(json!=null)
+//        socket.emit("username",json)
+    }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.layout_chat_detail)
+        socket.connect()
         idChat = intent.getStringExtra("idChat")
         from = intent.getStringExtra("from")
         to = intent.getStringExtra("to")
@@ -79,12 +87,12 @@ class DetailChatActivity : DaggerAppCompatActivity (){
         Picasso.get().load(imgFriend).into(story_user)
         loadGif()
 
-        socket.connect()
+
         var userModel= UserModel()
         userModel.username=from
         val gson = Gson()
-        val json = gson.toJson(userModel)
-        socket.emit("username",json)
+        json= gson.toJson(userModel)
+        socket.emit("username",json!!)
         socket.on("message", onNewMessage)
         img_back?.setOnClickListener {
             finish()
@@ -204,6 +212,23 @@ class DetailChatActivity : DaggerAppCompatActivity (){
            adapter.addItemArralyListDetail(it)
             recyclerListChatDetail?.scrollToPosition(adapter.arrayList.size -1)
         })
+        viewModel.livedataImgUpdaload.observe(this, Observer {it->
+            Log.d("kiemtra","fdsgfdsgsfg")
+            var chatDetailModel = ChatDetailModel()
+            if (idChat==null){
+                idChat = ""
+            }
+            Log.d("kiemtra",""+it)
+            chatDetailModel.idChat=idChat
+            chatDetailModel.content=it.string()
+            chatDetailModel.from=from
+            chatDetailModel.to=to
+            chatDetailModel.type=3
+            val gson = Gson()
+            val json = gson.toJson(chatDetailModel)
+
+            socket.emit("message",json)
+        })
 
     }
     fun hideKeyboard(activity: Activity) {
@@ -270,13 +295,26 @@ class DetailChatActivity : DaggerAppCompatActivity (){
                 val count = data.clipData!!.itemCount
                 for (i in 0 until count) {
                     val imageUri = data.clipData!!.getItemAt(i).uri
-                    Log.d("kiemtra",""+imageUri)
+
                 }
             }
             else if (data.data != null) {
                 val path = ImageFilePath.getPathFromUri(this,data.data!!)
                 val file = File(path)
+
                 viewModel.upLoadImage(file)
+
+                var chatDetailModel = ChatDetailModel()
+                if (idChat==null){
+                    idChat = ""
+                }
+                chatDetailModel.idChat=idChat
+                chatDetailModel.content=data.data.toString()
+                chatDetailModel.from=from
+                chatDetailModel.to=to
+                chatDetailModel.type=3
+
+                viewModel.liveDataChat.value= chatDetailModel
 
             }
         }
@@ -335,6 +373,11 @@ class DetailChatActivity : DaggerAppCompatActivity (){
 
     override fun onStop() {
         super.onStop()
+
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
         socket.disconnect()
     }
     private val onNewMessage =

@@ -41,15 +41,11 @@ class MessageViewModel @Inject constructor(val messageApi: MessageApi,val detail
                         liveDataFriend.value=it
                     },{it->
                         Log.d("kiemtra",""+it.message)
-                    },{
-                        Log.d("kiemtra","done")
                     })
 
             },{erro->
                 Log.d("kiemtra",""+erro.message)
 
-            },{
-                Log.d("kiemtra","done2")
             })
     }
     @SuppressLint("CheckResult")
