@@ -1,12 +1,16 @@
 package com.example.clonemessandroid.ui.login
 
 import android.annotation.SuppressLint
+import android.content.SharedPreferences
+import android.graphics.drawable.Drawable
 import android.text.TextUtils
 import android.util.Log
 import android.util.Patterns
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import com.bumptech.glide.RequestManager
 import com.example.clonemessandroid.network.LoginApi
+import com.example.clonemessandroid.session_manager.SessionManager
 import io.reactivex.Observable
 import io.reactivex.ObservableTransformer
 import io.reactivex.Single
@@ -16,9 +20,15 @@ import io.reactivex.schedulers.Schedulers
 import javax.inject.Inject
 
 class LoginViewModel  @Inject
-constructor(val loginApi: LoginApi): ViewModel() {
-    //@Inject
-   // lateinit var database : DatabaseReference
+constructor(val loginApi: LoginApi,var sessionManager: SessionManager): ViewModel() {
+    @Inject
+    lateinit var someThing :String
+    //lateinit var sharedPreferences : SharedPreferences
+//    @Inject
+//    lateinit var logo:Drawable
+//    @Inject
+//    lateinit var requestManager: RequestManager
+
     var mIsValidUser: MutableLiveData<Boolean> = MutableLiveData()
     var mIsValidPass: MutableLiveData<Boolean> = MutableLiveData()
 

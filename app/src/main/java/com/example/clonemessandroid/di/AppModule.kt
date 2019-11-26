@@ -1,6 +1,8 @@
 package com.example.clonemessandroid.di
 
 import android.app.Application
+import android.content.Context
+import android.content.SharedPreferences
 import android.graphics.drawable.Drawable
 import androidx.core.content.ContextCompat
 import androidx.room.Room
@@ -10,6 +12,7 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.RequestManager
 import com.bumptech.glide.request.RequestOptions
 import com.example.clonemessandroid.R
+import com.example.clonemessandroid.ui.login.LoginActivity
 import com.example.clonemessandroid.util.Constants
 
 import dagger.Module
@@ -23,17 +26,14 @@ import javax.inject.Singleton
 
 @Module
 class AppModule {
+
+
+
     @Singleton
     @Provides
     fun someThing():String{
         return "this is a test"
     }
-
-//    @Singleton
-//    @Provides
-//    internal fun provideDatabaseReferenceInstance(): DatabaseReference {
-//        return FirebaseDatabase.getInstance().reference
-//    }
 
 
     @Singleton
@@ -69,6 +69,15 @@ class AppModule {
             .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
             .addConverterFactory(GsonConverterFactory.create())
             .build()
+    }
+
+
+    private val PREF_NAME = "CloneMessage"
+    var PRIVATE_MODE = 0
+    @Provides
+    @Singleton
+    fun provideSharedPreferences(application: Application): SharedPreferences {
+        return application.getSharedPreferences(PREF_NAME, PRIVATE_MODE)
     }
 
 

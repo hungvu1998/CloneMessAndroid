@@ -66,9 +66,14 @@ class ListChatRecyclerAdapter(var recyclerClickItem: RecyclerClickItem) : Recycl
                 }
                 txtTimeLast.setText(getDateTime(chatModel.messages!![0].timestamp!!))
             }
+            if(chatModel.messages!![0].type==1)
             txtChatLast.setText(""+ chatModel.messages!![0].content)
-
-
+            else if (chatModel.messages!![0].type==2){
+                txtChatLast.setText("[Sticker]")
+            }
+            else if (chatModel.messages!![0].type==3){
+                txtChatLast.setText("[Image]")
+            }
         }
 
         private fun getDateTime(s: Long): String? {

@@ -14,11 +14,16 @@ import android.provider.MediaStore
 import android.text.Editable
 import android.text.TextWatcher
 import android.util.Log
+import android.view.LayoutInflater
 import android.view.View
 import android.view.inputmethod.InputMethodManager
+import android.widget.FrameLayout
+import android.widget.PopupWindow
+import android.widget.RelativeLayout
 import androidx.annotation.RequiresApi
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.fragment.app.DialogFragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -26,6 +31,7 @@ import com.bumptech.glide.Glide
 import com.example.clonemessandroid.R
 import com.example.clonemessandroid.data.model.ChatDetailModel
 import com.example.clonemessandroid.data.model.UserModel
+import com.example.clonemessandroid.ui.detail_chat.full_screen_img.FullScreenImgDialog
 import com.example.clonemessandroid.util.ImageFilePath
 import com.example.clonemessandroid.viewmodels.ViewModelProvidersFactory
 import com.github.nkzawa.emitter.Emitter
@@ -41,7 +47,16 @@ import org.json.JSONObject
 import java.io.File
 import javax.inject.Inject
 
-class DetailChatActivity : DaggerAppCompatActivity (){
+class DetailChatActivity : DaggerAppCompatActivity (),RecyclerImgFullScreen{
+    override fun loadImg(img: String) {
+        val dialog: DialogFragment= FullScreenImgDialog(img)
+        dialog.show(supportFragmentManager,"tag")
+//        val inflater = baseContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
+//        val customView = inflater.inflate(R.layout.layout_dialog_img_fullscreen,null)
+//        val myPopUp = PopupWindow(customView,RelativeLayout.LayoutParams.MATCH_PARENT,RelativeLayout.LayoutParams.MATCH_PARENT)
+//        customView.setOnTouchListener { v, event ->  return@setOnTouchListener false}
+    }
+
     @Inject
     lateinit var providerFactory: ViewModelProvidersFactory
     lateinit var viewModel: DetailChatViewModel
@@ -59,7 +74,6 @@ class DetailChatActivity : DaggerAppCompatActivity (){
     var json:String?=null
     override fun onStart() {
         super.onStart()
-
 //        if(json!=null)
 //        socket.emit("username",json)
     }
@@ -257,7 +271,7 @@ class DetailChatActivity : DaggerAppCompatActivity (){
         edtContent?.setText("")
     }
     private fun initRecyclerView(){
-        adapter = DetailChatRecyclerAdapter(this,from,imgFriend)
+        adapter = DetailChatRecyclerAdapter(this,from,imgFriend,this)
         adapter.setArrayListDetail(listChatDetailModel)
         val layoutManager= LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
         layoutManager.stackFromEnd=true

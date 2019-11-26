@@ -10,10 +10,12 @@ import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
+import androidx.fragment.app.DialogFragment
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.clonemessandroid.R
 import com.example.clonemessandroid.data.model.ChatDetailModel
+import com.example.clonemessandroid.ui.detail_chat.full_screen_img.FullScreenImgDialog
 import com.squareup.picasso.Picasso
 import de.hdodenhof.circleimageview.CircleImageView
 import org.w3c.dom.Text
@@ -21,7 +23,7 @@ import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.collections.ArrayList
 
-class DetailChatRecyclerAdapter(var context: Context, var usernameCurrent:String, var imgFriend :String) : RecyclerView.Adapter<RecyclerView.ViewHolder>(){
+class DetailChatRecyclerAdapter(var context: Context, var usernameCurrent:String, var imgFriend :String,val recyclerImgFullScreen: RecyclerImgFullScreen) : RecyclerView.Adapter<RecyclerView.ViewHolder>(){
 
     var arrayList: ArrayList<ChatDetailModel> = ArrayList()
 
@@ -32,7 +34,7 @@ class DetailChatRecyclerAdapter(var context: Context, var usernameCurrent:String
     }
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
-        (holder as PostViewHolder).bind(context,arrayList[position],position,usernameCurrent,imgFriend)
+        (holder as PostViewHolder).bind(context,arrayList[position],position,usernameCurrent,imgFriend,recyclerImgFullScreen)
 
     }
 
@@ -63,7 +65,7 @@ class DetailChatRecyclerAdapter(var context: Context, var usernameCurrent:String
         private var preview_image:ImageView =  itemView.findViewById(R.id.preview_image)
 
 
-        fun bind(context: Context,chatDetailModel: ChatDetailModel,position:Int,usernameCurrent:String, imgFriend :String) {
+        fun bind(context: Context,chatDetailModel: ChatDetailModel,position:Int,usernameCurrent:String, imgFriend :String,recyclerImgFullScreen: RecyclerImgFullScreen) {
             txtTime.visibility=View.GONE
             if(chatDetailModel.from == usernameCurrent){
                 containerLayoutDetailChat.gravity=Gravity.END
@@ -100,6 +102,10 @@ class DetailChatRecyclerAdapter(var context: Context, var usernameCurrent:String
                 img_story.visibility=View.GONE
                 layout_img.visibility=View.VISIBLE
                 Picasso.get().load(chatDetailModel.content).into(preview_image)
+
+                preview_image.setOnClickListener {
+                    recyclerImgFullScreen.loadImg(chatDetailModel.content!!)
+                }
             }
 
 

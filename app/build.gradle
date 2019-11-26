@@ -68,6 +68,14 @@ dependencies {
     implementation 'io.reactivex.rxjava2:rxjava:2.1.11'
     implementation 'io.reactivex.rxjava2:rxkotlin:2.3.0'
 
+    //workManager
+//    def work_version = "2.2.0"
+//    implementation "androidx.work:work-runtime:$work_version"
+//    implementation "androidx.work:work-runtime-ktx:$work_version"
+//    implementation "androidx.work:work-rxjava2:$work_version"
+//    implementation "androidx.work:work-gcm:$work_version"
+//    androidTestImplementation "androidx.work:work-testing:$work_version"
+
     //Picaso
     implementation 'com.squareup.picasso:picasso:2.71828'
 
