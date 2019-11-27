@@ -9,6 +9,7 @@ interface LoginApi{
     @FormUrlEncoded
     abstract fun login(@Field("username") name:String,@Field("password") password:String) : Observable<UserModel>
 
-
+    @GET("user/{name}")
+    abstract fun getUser(@Path("name") name: String): Observable<UserModel>
 
 }

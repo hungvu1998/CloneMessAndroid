@@ -7,6 +7,7 @@ import android.os.AsyncTask
 import android.os.Bundle
 import android.util.Log
 import android.view.View
+import android.widget.ImageView
 import android.widget.Toast
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
@@ -19,11 +20,8 @@ import com.example.clonemessandroid.ui.register.RegisterActivity
 import com.example.clonemessandroid.viewmodels.ViewModelProvidersFactory
 
 import dagger.android.support.DaggerAppCompatActivity
-import io.reactivex.Observable
-import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.rxkotlin.subscribeBy
 import io.reactivex.rxkotlin.toObservable
-import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.layout_login.*
 import javax.inject.Inject
 
@@ -40,6 +38,19 @@ class LoginActivity : DaggerAppCompatActivity(),LoginNavigator {
 
     lateinit var viewModel: LoginViewModel
 
+    @Inject
+    lateinit var logo: Drawable
+
+    @Inject
+    lateinit var requestManager: RequestManager
+
+
+    override fun onStart() {
+        super.onStart()
+        viewModel.checkLogin()
+    }
+
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.layout_login)
@@ -47,7 +58,8 @@ class LoginActivity : DaggerAppCompatActivity(),LoginNavigator {
         viewModel= ViewModelProviders.of(this,providerFactory).get(LoginViewModel::class.java)
         viewModel.setNavigator(this)
 
-        Glide.with(this).load(R.drawable.icon_mess).into(imageView2)
+        setLogo()
+
         btnLogIn?.setOnClickListener {
             viewModel.isEmailAndPasswordValid()
         }
@@ -62,6 +74,11 @@ class LoginActivity : DaggerAppCompatActivity(),LoginNavigator {
 
 
        // test()
+    }
+
+
+    private fun setLogo() {
+        requestManager.load(logo).into(imageView2)
     }
 
     @SuppressLint("CheckResult")
@@ -91,7 +108,8 @@ class LoginActivity : DaggerAppCompatActivity(),LoginNavigator {
     fun onLoginSucce(userModel: UserModel){
         val intent= Intent(this,HomeActivity::class.java)
         intent.putExtra("userModel",userModel)
-
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
+        intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
         startActivity(intent)
         finish()
     }

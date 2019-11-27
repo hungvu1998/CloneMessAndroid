@@ -43,7 +43,6 @@ constructor(val detailChatApi: DetailChatApi) : ViewModel() {
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe({it->
-
                 livedataImgUpdaload.value=it
 
             },{it->

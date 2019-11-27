@@ -1,6 +1,7 @@
 package com.example.clonemessandroid.ui.login
 
 import android.annotation.SuppressLint
+import android.content.Context
 import android.content.SharedPreferences
 import android.graphics.drawable.Drawable
 import android.text.TextUtils
@@ -21,13 +22,8 @@ import javax.inject.Inject
 
 class LoginViewModel  @Inject
 constructor(val loginApi: LoginApi,var sessionManager: SessionManager): ViewModel() {
-    @Inject
-    lateinit var someThing :String
-    //lateinit var sharedPreferences : SharedPreferences
-//    @Inject
-//    lateinit var logo:Drawable
-//    @Inject
-//    lateinit var requestManager: RequestManager
+
+
 
     var mIsValidUser: MutableLiveData<Boolean> = MutableLiveData()
     var mIsValidPass: MutableLiveData<Boolean> = MutableLiveData()
@@ -58,14 +54,14 @@ constructor(val loginApi: LoginApi,var sessionManager: SessionManager): ViewMode
             .subscribe({ it->
                 if(it.message!!){
                     getNavigator()!!.succes(true,it)
+                    sessionManager.createLoginSession(it.username!!)
                 }
                 else{
                     getNavigator()!!.succes(false,null)
                 }
 
             },{it->
-                Log.d("kiemtra","Erro")
-                Log.d("kiemtra",""+it.message)
+                getNavigator()!!.succes(false,null)
             })
     }
     fun isEmailAndPasswordValid() {
@@ -73,6 +69,27 @@ constructor(val loginApi: LoginApi,var sessionManager: SessionManager): ViewMode
 
     }
 
+    @SuppressLint("CheckResult")
+    fun checkLogin(){
+        if(sessionManager.isLoggedIn()){
+            sessionManager.getUserId()?.let {
+                loginApi.getUser(it)
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe({ it->
+                        if(it.message!!){
+                            getNavigator()!!.succes(true,it)
+                        } else{
+                            getNavigator()!!.succes(false,null)
+                        }
+
+                    },{it->
+                        getNavigator()!!.succes(false,null)
+                    })
+            }
+
+        }
+    }
 
      val lengthGreaterThanSix = ObservableTransformer<String, String> { observable ->
          observable.flatMap {

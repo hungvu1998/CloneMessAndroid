@@ -39,6 +39,9 @@ import com.github.nkzawa.socketio.client.IO
 import com.google.gson.Gson
 import com.squareup.picasso.Picasso
 import dagger.android.support.DaggerAppCompatActivity
+import io.reactivex.Observable
+import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.fragment_chated.*
 import kotlinx.android.synthetic.main.fragment_message.*
 import kotlinx.android.synthetic.main.layout_chat_detail.*
@@ -71,6 +74,7 @@ class DetailChatActivity : DaggerAppCompatActivity (),RecyclerImgFullScreen{
     val REQUEST_PERMISSION_CAMERA=5
     val REQUEST_PERMISSION_GALLERY=6
     val PICK_IMAGE = 1
+    val PICK_CAMERA = 2
     var json:String?=null
     override fun onStart() {
         super.onStart()
@@ -227,12 +231,10 @@ class DetailChatActivity : DaggerAppCompatActivity (),RecyclerImgFullScreen{
             recyclerListChatDetail?.scrollToPosition(adapter.arrayList.size -1)
         })
         viewModel.livedataImgUpdaload.observe(this, Observer {it->
-            Log.d("kiemtra","fdsgfdsgsfg")
             var chatDetailModel = ChatDetailModel()
             if (idChat==null){
                 idChat = ""
             }
-            Log.d("kiemtra",""+it)
             chatDetailModel.idChat=idChat
             chatDetailModel.content=it.string()
             chatDetailModel.from=from
@@ -241,6 +243,7 @@ class DetailChatActivity : DaggerAppCompatActivity (),RecyclerImgFullScreen{
             val gson = Gson()
             val json = gson.toJson(chatDetailModel)
 
+            Log.d("kiemtraLive2",""+chatDetailModel.content)
             socket.emit("message",json)
         })
 
@@ -309,10 +312,26 @@ class DetailChatActivity : DaggerAppCompatActivity (),RecyclerImgFullScreen{
                 val count = data.clipData!!.itemCount
                 for (i in 0 until count) {
                     val imageUri = data.clipData!!.getItemAt(i).uri
+                    val path = ImageFilePath.getPathFromUri(this,imageUri)
+                    val file = File(path)
+                    viewModel.upLoadImage(file)
+
+                    var chatDetailModel = ChatDetailModel()
+                    if (idChat==null){
+                        idChat = ""
+                    }
+                    chatDetailModel.idChat=idChat
+                    chatDetailModel.content=data.data.toString()
+                    chatDetailModel.from=from
+                    chatDetailModel.to=to
+                    chatDetailModel.type=3
+
+                    viewModel.liveDataChat.value= chatDetailModel
 
                 }
             }
             else if (data.data != null) {
+
                 val path = ImageFilePath.getPathFromUri(this,data.data!!)
                 val file = File(path)
 
@@ -332,23 +351,12 @@ class DetailChatActivity : DaggerAppCompatActivity (),RecyclerImgFullScreen{
 
             }
         }
+        else if(requestCode == PICK_CAMERA && resultCode == Activity.RESULT_OK ){
+
+
+        }
     }
 
-    fun getRealPathFromURI(contentUri: Uri):String{
-        var result:String?=null
-        var cursor =contentResolver.query(contentUri,null,null,null,null)
-        if (cursor==null){
-            result=contentUri.path
-        }
-        else{
-            cursor.moveToFirst()
-            val index = cursor.getColumnIndex(MediaStore.Images.ImageColumns.DATA)
-            result = cursor.getString(index)
-            cursor.close()
-        }
-        return result!!
-
-    }
 
     fun permissionPicture(){
         val checkPermissionExternalStorage:Int= ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE)
@@ -382,7 +390,7 @@ class DetailChatActivity : DaggerAppCompatActivity (),RecyclerImgFullScreen{
     }
     fun succesPermissionCamera(){
         val intent =  Intent("android.media.action.IMAGE_CAPTURE")
-        startActivity(intent)
+        startActivityForResult(intent,PICK_CAMERA)
     }
 
     override fun onStop() {

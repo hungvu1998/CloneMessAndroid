@@ -72,10 +72,11 @@ class AppModule {
     }
 
 
+
     private val PREF_NAME = "CloneMessage"
     var PRIVATE_MODE = 0
-    @Provides
     @Singleton
+    @Provides
     fun provideSharedPreferences(application: Application): SharedPreferences {
         return application.getSharedPreferences(PREF_NAME, PRIVATE_MODE)
     }

@@ -1,8 +1,7 @@
 package com.example.clonemessandroid.di
 
 
-
-import com.example.clonemessandroid.Application
+import android.app.Application
 import dagger.BindsInstance
 import dagger.Component
 import dagger.android.AndroidInjector
@@ -14,9 +13,10 @@ import javax.inject.Singleton
     modules = [
         AndroidSupportInjectionModule::class,
         ActivityBuildersModule::class,
-        AppModule::class
+        AppModule::class,
+        ViewModelFactoryModule::class
     ])
-interface AppComponent : AndroidInjector<Application> {
+interface AppComponent : AndroidInjector<com.example.clonemessandroid.Application> {
 
 
     @Component.Builder

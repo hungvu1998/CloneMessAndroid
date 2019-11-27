@@ -1,6 +1,9 @@
 package com.example.clonemessandroid.ui.detail_chat
 
+import android.annotation.SuppressLint
 import android.content.Context
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.util.Log
 import android.view.Gravity
 import android.view.LayoutInflater
@@ -18,7 +21,13 @@ import com.example.clonemessandroid.data.model.ChatDetailModel
 import com.example.clonemessandroid.ui.detail_chat.full_screen_img.FullScreenImgDialog
 import com.squareup.picasso.Picasso
 import de.hdodenhof.circleimageview.CircleImageView
+import io.reactivex.Observable
+import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.schedulers.Schedulers
 import org.w3c.dom.Text
+import java.net.HttpURLConnection
+import java.net.URL
+import java.nio.ByteBuffer
 import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.collections.ArrayList
@@ -65,7 +74,9 @@ class DetailChatRecyclerAdapter(var context: Context, var usernameCurrent:String
         private var preview_image:ImageView =  itemView.findViewById(R.id.preview_image)
 
 
-        fun bind(context: Context,chatDetailModel: ChatDetailModel,position:Int,usernameCurrent:String, imgFriend :String,recyclerImgFullScreen: RecyclerImgFullScreen) {
+        @SuppressLint("CheckResult")
+        fun bind(context: Context, chatDetailModel: ChatDetailModel, position:Int, usernameCurrent:String, imgFriend :String, recyclerImgFullScreen: RecyclerImgFullScreen) {
+
             txtTime.visibility=View.GONE
             if(chatDetailModel.from == usernameCurrent){
                 containerLayoutDetailChat.gravity=Gravity.END
@@ -96,13 +107,14 @@ class DetailChatRecyclerAdapter(var context: Context, var usernameCurrent:String
                 Glide.with(context).load(context.resources.getIdentifier(chatDetailModel.content,"drawable",context.packageName)).into(img_story)
             }
             else{
+                Log.d("kiemta",""+chatDetailModel.content)
                 //image
                 txtChat.visibility=View.GONE
                 layout_chat.visibility=View.GONE
                 img_story.visibility=View.GONE
                 layout_img.visibility=View.VISIBLE
-                Picasso.get().load(chatDetailModel.content).into(preview_image)
-
+                //Picasso.get().load(chatDetailModel.content).into(preview_image)
+                Glide.with(context).load(chatDetailModel.content).into(preview_image)
                 preview_image.setOnClickListener {
                     recyclerImgFullScreen.loadImg(chatDetailModel.content!!)
                 }
@@ -151,7 +163,19 @@ class DetailChatRecyclerAdapter(var context: Context, var usernameCurrent:String
                 return e.toString()
             }
         }
+        fun download_img(url:String): Bitmap?{
+            var bmp:Bitmap?=null
+            try {
+                var urln= URL(url)
+                val con =urln.openConnection() as HttpURLConnection
+                val iss=con.inputStream
+                bmp = BitmapFactory.decodeStream(iss)
+            }
+            catch (e : Exception){
 
+            }
+            return bmp
+        }
 
     }
 }
