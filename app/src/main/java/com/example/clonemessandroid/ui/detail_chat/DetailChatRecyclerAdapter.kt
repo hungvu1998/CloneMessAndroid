@@ -163,19 +163,7 @@ class DetailChatRecyclerAdapter(var context: Context, var usernameCurrent:String
                 return e.toString()
             }
         }
-        fun download_img(url:String): Bitmap?{
-            var bmp:Bitmap?=null
-            try {
-                var urln= URL(url)
-                val con =urln.openConnection() as HttpURLConnection
-                val iss=con.inputStream
-                bmp = BitmapFactory.decodeStream(iss)
-            }
-            catch (e : Exception){
 
-            }
-            return bmp
-        }
 
     }
 }
