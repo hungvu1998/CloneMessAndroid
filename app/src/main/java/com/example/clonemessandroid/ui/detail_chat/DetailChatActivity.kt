@@ -34,6 +34,7 @@ import com.bumptech.glide.Glide
 import com.example.clonemessandroid.R
 import com.example.clonemessandroid.data.model.ChatDetailModel
 import com.example.clonemessandroid.data.model.UserModel
+import com.example.clonemessandroid.ui.call.CallActivity
 import com.example.clonemessandroid.ui.detail_chat.full_screen_img.FullScreenImgDialog
 import com.example.clonemessandroid.util.ImageFilePath
 import com.example.clonemessandroid.viewmodels.ViewModelProvidersFactory
@@ -145,6 +146,14 @@ class DetailChatActivity : DaggerAppCompatActivity (),RecyclerImgFullScreen{
             }
 
         }
+
+        imgPhone?.setOnClickListener {
+            val intent = Intent(this,CallActivity::class.java)
+            intent.putExtra("to",to)
+            intent.putExtra("imgFriend",imgFriend)
+            startActivity(intent)
+        }
+
         edtContent?.addTextChangedListener(object : TextWatcher {
             override fun afterTextChanged(s: Editable?) {
 

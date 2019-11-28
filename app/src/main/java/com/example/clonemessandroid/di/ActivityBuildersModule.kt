@@ -1,5 +1,7 @@
 package com.example.clonemessandroid.di
 
+import com.example.clonemessandroid.di.call.CallModule
+import com.example.clonemessandroid.di.call.CallViewModelsModule
 import com.example.clonemessandroid.di.detail_chat.DetailChatModule
 import com.example.clonemessandroid.di.detail_chat.DetailChatViewModelsModule
 import com.example.clonemessandroid.di.detail_stories.DetailStoriesFragmentBuildersModule
@@ -16,6 +18,7 @@ import com.example.clonemessandroid.di.profile.ProfileModule
 import com.example.clonemessandroid.di.profile.ProfileViewModelsModule
 import com.example.clonemessandroid.di.register.RegisterModule
 import com.example.clonemessandroid.di.register.RegisterViewModelsModule
+import com.example.clonemessandroid.ui.call.CallActivity
 import com.example.clonemessandroid.ui.detail_chat.DetailChatActivity
 import com.example.clonemessandroid.ui.detail_stories.StoriesDetailActivity
 import com.example.clonemessandroid.ui.edit_fullname.EditFullNameActivity
@@ -52,4 +55,8 @@ abstract class ActivityBuildersModule {
 
     @ContributesAndroidInjector(modules = [DetailStoriesFragmentBuildersModule::class, DetailStoriesModelsModule::class, DetailStoriesModule::class])
     abstract fun contributeStoriesDetailActivity(): StoriesDetailActivity
+
+
+    @ContributesAndroidInjector(modules = [CallViewModelsModule::class,CallModule::class])
+    abstract fun contributeCallActivity(): CallActivity
 }
