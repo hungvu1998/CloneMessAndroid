@@ -58,7 +58,7 @@ class LoginActivity : DaggerAppCompatActivity(),LoginNavigator {
         viewModel= ViewModelProviders.of(this,providerFactory).get(LoginViewModel::class.java)
         viewModel.setNavigator(this)
 
-        setLogo()
+       // setLogo()
 
         btnLogIn?.setOnClickListener {
             viewModel.isEmailAndPasswordValid()

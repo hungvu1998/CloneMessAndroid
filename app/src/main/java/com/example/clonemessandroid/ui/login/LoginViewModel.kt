@@ -47,6 +47,7 @@ constructor(val loginApi: LoginApi,var sessionManager: SessionManager): ViewMode
     }
     @SuppressLint("CheckResult")
     fun loginNormal(userName: String, pass: String) {
+        Log.d("kiemtra",""+userName)
         loginApi.login(userName,pass)
 
             .subscribeOn(Schedulers.io())

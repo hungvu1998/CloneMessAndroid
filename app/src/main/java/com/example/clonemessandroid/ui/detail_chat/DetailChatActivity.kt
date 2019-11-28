@@ -7,9 +7,11 @@ import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.database.Cursor
+import android.graphics.Bitmap
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
+import android.os.Environment
 import android.provider.MediaStore
 import android.text.Editable
 import android.text.TextWatcher
@@ -20,6 +22,7 @@ import android.view.inputmethod.InputMethodManager
 import android.widget.FrameLayout
 import android.widget.PopupWindow
 import android.widget.RelativeLayout
+import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
@@ -48,7 +51,12 @@ import kotlinx.android.synthetic.main.layout_chat_detail.*
 import kotlinx.android.synthetic.main.progessbar_chat_detail.*
 import org.json.JSONObject
 import java.io.File
+import java.io.FileOutputStream
+import java.io.OutputStream
+import java.text.SimpleDateFormat
+import java.util.*
 import javax.inject.Inject
+import kotlin.collections.ArrayList
 
 class DetailChatActivity : DaggerAppCompatActivity (),RecyclerImgFullScreen{
     override fun loadImg(img: String) {
@@ -335,6 +343,7 @@ class DetailChatActivity : DaggerAppCompatActivity (),RecyclerImgFullScreen{
                 val path = ImageFilePath.getPathFromUri(this,data.data!!)
                 val file = File(path)
 
+
                 viewModel.upLoadImage(file)
 
                 var chatDetailModel = ChatDetailModel()
@@ -351,10 +360,43 @@ class DetailChatActivity : DaggerAppCompatActivity (),RecyclerImgFullScreen{
 
             }
         }
-        else if(requestCode == PICK_CAMERA && resultCode == Activity.RESULT_OK ){
+        else if(requestCode == PICK_CAMERA && resultCode == Activity.RESULT_OK && data != null ){
+            var photo : Bitmap = data!!.extras!!.get("data") as Bitmap
+            var file : File = createFile(photo)
 
+            viewModel.upLoadImage(file)
 
+            var chatDetailModel = ChatDetailModel()
+            if (idChat==null){
+                idChat = ""
+            }
+            chatDetailModel.idChat=idChat
+            chatDetailModel.content= file.path
+            Log.d("kiemtra", chatDetailModel.content.toString())
+            chatDetailModel.from=from
+            chatDetailModel.to=to
+            chatDetailModel.type=3
+
+            viewModel.liveDataChat.value= chatDetailModel
         }
+    }
+
+    fun createFile(bitmap : Bitmap) : File{
+
+        val timeStamp: String = SimpleDateFormat("yyyyMMdd_HHmmss").format(Date())
+        val storageDir: File? = getExternalFilesDir(Environment.DIRECTORY_PICTURES)
+        var imageFile: File =  File(storageDir, timeStamp + ".png")
+        var os : OutputStream
+        try {
+          os = FileOutputStream(imageFile)
+          bitmap.compress(Bitmap.CompressFormat.PNG, 100, os)
+          os.flush()
+          os.close()
+        } catch (e : Exception) {
+          Log.e("kiemtra", "Error writing bitmap", e)
+        }
+
+        return imageFile
     }
 
 
