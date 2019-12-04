@@ -1,26 +1,24 @@
 package com.example.clonemessandroid.ui.call
 
 import android.os.Bundle
-import androidx.lifecycle.ViewModelProviders
 import com.example.clonemessandroid.R
-import com.example.clonemessandroid.data.model.UserModel
 import com.example.clonemessandroid.viewmodels.ViewModelProvidersFactory
 import com.squareup.picasso.Picasso
 import dagger.android.support.DaggerAppCompatActivity
 import kotlinx.android.synthetic.main.layout_call.*
 import javax.inject.Inject
-import android.util.Log;
-import com.opentok.android.Session;
-import com.opentok.android.Stream;
-import com.opentok.android.Publisher;
-import com.opentok.android.PublisherKit;
-import com.opentok.android.Subscriber;
-import com.opentok.android.OpentokError;
-import androidx.annotation.NonNull;
+import android.util.Log
+import com.opentok.android.Session
+import com.opentok.android.Stream
+import com.opentok.android.Publisher
+import com.opentok.android.PublisherKit
+import com.opentok.android.Subscriber
+import com.opentok.android.OpentokError
+import androidx.annotation.NonNull
 import android.Manifest;
 import com.opentok.android.Session.SessionListener
-import pub.devrel.easypermissions.AfterPermissionGranted;
-import pub.devrel.easypermissions.EasyPermissions;
+import pub.devrel.easypermissions.AfterPermissionGranted
+import pub.devrel.easypermissions.EasyPermissions
 import android.widget.FrameLayout
 import android.opengl.GLSurfaceView;
 import android.view.View
@@ -62,10 +60,10 @@ class CallActivity : DaggerAppCompatActivity(), SessionListener, PublisherListen
         from = intent.getStringExtra("from")
         idChat = intent.getStringExtra("idChat")
         imgFriend = intent.getStringExtra("imgFriend")
-<<<<<<< HEAD
+
         Picasso.get().load(imgFriend).into(img_background)
         Picasso.get().load(imgFriend).into(imgAvatar)
-=======
+
 //
 //        Picasso.get().load(imgFriend).into(img_background)
 //        Picasso.get().load(imgFriend).into(imgAvatar)
@@ -223,6 +221,5 @@ class CallActivity : DaggerAppCompatActivity(), SessionListener, PublisherListen
     override fun onDestroy() {
         super.onDestroy()
         socket.disconnect()
->>>>>>> 712976836c52fd441210a84aea9945711d3542ad
     }
 }

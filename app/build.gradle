@@ -24,6 +24,7 @@ android {
     kapt {
         generateStubs = true
     }
+
 }
 
 dependencies {
@@ -113,5 +114,7 @@ dependencies {
 
     //easy permissions
     implementation 'pub.devrel:easypermissions:3.0.0'
+
+
 
 }
