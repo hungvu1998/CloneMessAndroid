@@ -121,6 +121,9 @@ class DetailChatActivity : DaggerAppCompatActivity (),RecyclerImgFullScreen{
         json= gson.toJson(userModel)
         socket.emit("username",json!!)
         socket.on("message", onNewMessage)
+
+
+
         img_back?.setOnClickListener {
             finish()
         }
@@ -148,10 +151,11 @@ class DetailChatActivity : DaggerAppCompatActivity (),RecyclerImgFullScreen{
         }
 
         imgPhone?.setOnClickListener {
-            val intent = Intent(this,CallActivity::class.java)
-            intent.putExtra("to",to)
-            intent.putExtra("imgFriend",imgFriend)
-            startActivity(intent)
+            startVideoCall()
+        }
+
+        imgVideoCam?.setOnClickListener{
+            startVideoCall()
         }
 
         edtContent?.addTextChangedListener(object : TextWatcher {
@@ -297,9 +301,6 @@ class DetailChatActivity : DaggerAppCompatActivity (),RecyclerImgFullScreen{
         layoutManager.stackFromEnd=true
         recyclerListChatDetail?.layoutManager = layoutManager
         recyclerListChatDetail?.adapter = adapter
-
-
-
     }
 
     fun permissionCamera(){
@@ -458,16 +459,31 @@ class DetailChatActivity : DaggerAppCompatActivity (),RecyclerImgFullScreen{
             runOnUiThread {
                 val data= it[0] as JSONObject
                 idChat= data["idChat"].toString()
+
                 if(data["from"].toString() != from){
                     var chatDetailModel = ChatDetailModel()
-                    chatDetailModel.idChat=idChat
-                    chatDetailModel.content=data["content"].toString()
-                    chatDetailModel.from=data["from"].toString()
-                    chatDetailModel.to=data["to"].toString()
-                    chatDetailModel.type= data["type"] as Int
-                    chatDetailModel.timestamp= data["timestamp"] as Long
-                    viewModel.liveDataChat.value= chatDetailModel
+                    chatDetailModel.idChat = idChat
+                    chatDetailModel.content = data["content"].toString()
+                    chatDetailModel.from = data["from"].toString()
+                    chatDetailModel.to = data["to"].toString()
+                    chatDetailModel.type = data["type"] as Int
+                    chatDetailModel.timestamp = data["timestamp"] as Long
+                    viewModel.liveDataChat.value = chatDetailModel
+
+                    if(chatDetailModel.type == 4){
+                        startVideoCall()
+                    }
                 }
             }
         }
+
+    fun startVideoCall(){
+        val intent = Intent(this,CallActivity::class.java)
+        intent.putExtra("to",to)
+        intent.putExtra("from",from)
+        intent.putExtra("idChat",idChat)
+        intent.putExtra("imgFriend",imgFriend)
+        Log.d("kiemtrahaha", "start video call")
+        startActivity(intent)
+    }
 }
