@@ -39,7 +39,7 @@ class StoryDetailFragment : DaggerFragment(){
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        Picasso.get().load(stories?.img).into(imgStory)
+        Picasso.get().load(stories?.imagePath).into(imgStory)
         subscribeObservers()
     }
     fun subscribeObservers(){

@@ -35,6 +35,14 @@ class UserModel() : Parcelable{
     @Expose
     var active:Boolean?=null
 
+
+    @SerializedName("stories")
+    @Expose
+    var stories:ArrayList<String>?=null
+
+    var listStories:ArrayList<Stories> ?=null
+
+
     constructor(parcel: Parcel) : this() {
         username = parcel.readString()
         fullname = parcel.readString()
@@ -43,6 +51,8 @@ class UserModel() : Parcelable{
         friends = parcel.createStringArrayList()
         active = parcel.readValue(Boolean::class.java.classLoader) as? Boolean
         chats = parcel.createStringArrayList()
+        stories = parcel.createStringArrayList()
+        listStories=parcel.createTypedArrayList(Stories.CREATOR)
     }
 
     override fun writeToParcel(parcel: Parcel, flags: Int) {
@@ -53,6 +63,8 @@ class UserModel() : Parcelable{
         parcel.writeStringList(friends)
         parcel.writeValue(active)
         parcel.writeStringList(chats)
+        parcel.writeStringList(stories)
+        parcel.writeTypedList(listStories)
     }
 
     override fun describeContents(): Int {

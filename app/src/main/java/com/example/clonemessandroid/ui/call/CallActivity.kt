@@ -23,7 +23,6 @@ class CallActivity : DaggerAppCompatActivity(){
         viewModel = ViewModelProviders.of(this,providerFactory).get(CallViewModel::class.java)
         to = intent.getStringExtra("to")
         imgFriend = intent.getStringExtra("imgFriend")
-
         Picasso.get().load(imgFriend).into(img_background)
         Picasso.get().load(imgFriend).into(imgAvatar)
     }

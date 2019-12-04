@@ -33,6 +33,7 @@ import android.app.Activity
 import android.content.Context
 import android.view.inputmethod.InputMethodManager
 import com.example.clonemessandroid.data.model.ChatModel
+import com.example.clonemessandroid.ui.camera.CameraActivity
 import com.example.clonemessandroid.ui.detail_chat.DetailChatActivity
 import com.example.clonemessandroid.ui.profile.ProfileActivity
 import com.github.nkzawa.emitter.Emitter
@@ -124,6 +125,7 @@ class MessageFragment : DaggerFragment(),RecyclerClickItem,OnBack{
             socket.emit("username",json)
         })
         messageViewModel.liveDataFriend.observe(this, Observer {it->
+            Log.d("kiemtra",""+it.username)
             listFriend.add(it)
             listFriend2.add(it)
             if(listFriend.size == userCurrent.friends!!.size +1){
@@ -136,11 +138,8 @@ class MessageFragment : DaggerFragment(),RecyclerClickItem,OnBack{
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe{it->
                         messageViewModel.getListChat(it)
-
                     }
-
             }
-
         })
 
         messageViewModel.liveDataChatModel.observe(this, Observer { it->
@@ -293,11 +292,10 @@ class MessageFragment : DaggerFragment(),RecyclerClickItem,OnBack{
                 //
                 //                viewModel.liveDataChat.value= chatDetailModel
             }
-
         }
-
-
     fun subscribeObservers(){
+
+
 
     }
     private fun initRecyclerView() {
@@ -336,7 +334,9 @@ class MessageFragment : DaggerFragment(),RecyclerClickItem,OnBack{
         }
     }
     fun succesPermission(){
-        val intent =  Intent("android.media.action.IMAGE_CAPTURE")
+//        val intent =  Intent("android.media.action.IMAGE_CAPTURE")
+//        startActivity(intent)
+        val intent = Intent(activity,CameraActivity::class.java)
         startActivity(intent)
     }
 
@@ -362,5 +362,4 @@ class MessageFragment : DaggerFragment(),RecyclerClickItem,OnBack{
             imm.hideSoftInputFromWindow(view.windowToken, 0)
         }
     }
-
 }

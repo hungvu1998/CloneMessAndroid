@@ -64,42 +64,31 @@ class StoryRecyclerAdapter(var recyclerClickItem: RecyclerClickItem) : RecyclerV
         private var layout_all:FrameLayout = itemView.findViewById(R.id.layout_all)
 
         fun bind(userModel: UserModel,position: Int,recyclerClickItem : RecyclerClickItem) {
-            if(position!=0){
-                layout_add.visibility=View.GONE
-                if(userModel.active!=null){
-                    if ( !userModel.active!!){
-                        story_user.visibility=View.GONE
-                        user_active.visibility=View.GONE
-                        layout_all.visibility=View.GONE
-                        layout_all.layoutParams = FrameLayout.LayoutParams(0, 0)
-                    }
-                    if (userModel.active!!){
-                        story_user.visibility=View.VISIBLE
-                        user_active.visibility=View.GONE
-                        Picasso.get().load(userModel.avatar!!).into(story_user)
+            if(position!=0) {
+                layout_add.visibility = View.GONE
+                if (userModel.active != null) {
+                    //hien thi story
+                    if (userModel.stories!!.size != 0) {
+                        story_user.visibility = View.VISIBLE
+                        user_active.visibility = View.GONE
+                        layout_all.visibility = View.VISIBLE
+                        Picasso.get().load(userModel.listStories!![userModel.listStories!!.size - 1].imagePath).into(story_user)
+                    } else {
+                        if(userModel.active!!){
+                            story_user.visibility=View.GONE
+                            user_active.visibility=View.VISIBLE
+                            layout_all.visibility=View.VISIBLE
+                            Picasso.get().load(userModel.avatar).into(img_user_active)
 
-                        story_user.setOnClickListener {
-                            recyclerClickItem.doThis(userModel)
+                        }else{
+                            story_user.visibility=View.GONE
+                            user_active.visibility=View.GONE
+                            layout_all.visibility=View.GONE
+                            layout_all.layoutParams = FrameLayout.LayoutParams(0, 0)
                         }
                     }
 
-
                 }
-
-
-
-//                if (userModel.stories!=null){
-//                    story_user.visibility=View.VISIBLE
-//                    user_active.visibility=View.GONE
-//                    Picasso.get().load(userModel.listStories[userModel.listStories.size-1].img).into(story_user)
-//
-//                    story_user.setOnClickListener {
-//                        recyclerClickItem.doThis(userModel.listStories)
-//                    }
-//                }
-
-
-
             }
             else{
                 layout_add.visibility=View.VISIBLE

@@ -4,6 +4,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.FrameLayout
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
@@ -52,15 +53,35 @@ class ListChatRecyclerAdapter(var recyclerClickItem: RecyclerClickItem) : Recycl
 
     inner class PostViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
 
-        private var profile_image: CircleImageView = itemView.findViewById(R.id.profile_image)
+        private var profile_image_story: CircleImageView = itemView.findViewById(R.id.profile_image_story)
         private var txtNameFriend:TextView = itemView.findViewById(R.id.txtNameFriend)
         private var txtChatLast:TextView=itemView.findViewById(R.id.txtChatLast)
         private var txtTimeLast:TextView = itemView.findViewById(R.id.txtTimeLast)
         private var layoutChat:LinearLayout = itemView.findViewById(R.id.layout_chat)
+        private var user_active:FrameLayout =itemView.findViewById(R.id.user_active)
+        private var img_user_active:CircleImageView = itemView.findViewById(R.id.img_user_active)
+        private var layout_active:LinearLayout = itemView.findViewById(R.id.layout_active)
         fun bind(chatModel: ChatModel,recyclerClickItem: RecyclerClickItem) {
             if (chatModel.userFriend!=null){
                 txtNameFriend.text=chatModel.userFriend!!.username
-                Picasso.get().load(chatModel.userFriend!!.avatar).into(profile_image)
+                if(chatModel.userFriend!!.stories!!.size !=0){
+                    profile_image_story.visibility=View.VISIBLE
+                    user_active.visibility=View.GONE
+                    Picasso.get().load(chatModel.userFriend!!.avatar).into(profile_image_story)
+                }
+                else {
+                    profile_image_story.visibility=View.GONE
+                    user_active.visibility=View.VISIBLE
+                    Picasso.get().load(chatModel.userFriend!!.avatar).into(img_user_active)
+                    if (chatModel.userFriend!!.active!!){
+                        layout_active.visibility=View.VISIBLE
+                    }
+                    else{
+                        layout_active.visibility=View.GONE
+                    }
+                }
+
+
                 layoutChat.setOnClickListener {
                     recyclerClickItem.doThis(chatModel.userFriend!!)
                 }
@@ -73,6 +94,9 @@ class ListChatRecyclerAdapter(var recyclerClickItem: RecyclerClickItem) : Recycl
             }
             else if (chatModel.messages!![0].type==3){
                 txtChatLast.setText("[Image]")
+            }
+            else{
+                txtChatLast.text="video"
             }
         }
 

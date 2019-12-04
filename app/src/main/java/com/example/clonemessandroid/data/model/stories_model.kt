@@ -2,23 +2,37 @@ package com.example.clonemessandroid.data.model
 
 import android.os.Parcel
 import android.os.Parcelable
+import com.google.gson.annotations.Expose
+import com.google.gson.annotations.SerializedName
 
 class Stories() : Parcelable{
-    var uid:String?=null
-    var img:String?=null
+
+    @SerializedName("storyId")
+    @Expose
+    var storyId:String?=null
+    @SerializedName("imagePath")
+    @Expose
+    var imagePath:String?=null
+    @SerializedName("listView")
+    @Expose
+    var listView:ArrayList<String>?=null
+    @SerializedName("timestamp")
+    @Expose
     var timestamp:Long?=null
-    var listSeen:ArrayList<String>?=null
+
 
     constructor(parcel: Parcel) : this() {
-        uid = parcel.readString()
-        img = parcel.readString()
+        storyId = parcel.readString()
+        imagePath = parcel.readString()
         timestamp = parcel.readValue(Long::class.java.classLoader) as? Long
+        listView = parcel.createStringArrayList()
     }
 
     override fun writeToParcel(parcel: Parcel, flags: Int) {
-        parcel.writeString(uid)
-        parcel.writeString(img)
+        parcel.writeString(storyId)
+        parcel.writeString(imagePath)
         parcel.writeValue(timestamp)
+        parcel.writeStringList(listView)
     }
 
     override fun describeContents(): Int {

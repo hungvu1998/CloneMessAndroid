@@ -7,13 +7,45 @@
     android:orientation="horizontal" android:layout_width="match_parent"
     android:layout_height="wrap_content">
 
-    <de.hdodenhof.circleimageview.CircleImageView
-        android:id="@+id/profile_image"
-        android:layout_width="80dp"
-        android:layout_height="80dp"
-        app:civ_border_color="@color/colorFB"
-        app:civ_border_width="4dp" />
 
+    <FrameLayout
+        android:layout_width="80dp"
+        android:layout_height="80dp">
+        <de.hdodenhof.circleimageview.CircleImageView
+            android:id="@+id/profile_image_story"
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            app:civ_border_color="@color/colorFB"
+            app:civ_border_width="4dp" />
+        <FrameLayout
+            android:id="@+id/user_active"
+            android:visibility="gone"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+            <de.hdodenhof.circleimageview.CircleImageView
+                android:id="@+id/img_user_active"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+
+                />
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:orientation="vertical"
+                android:padding="2dp"
+                android:id="@+id/layout_active"
+                android:gravity="bottom|end"
+                android:layout_height="match_parent">
+                <LinearLayout
+                    android:layout_width="15dp"
+                    android:padding="20dp"
+                    android:background="@drawable/border_circle_online"
+                    android:layout_height="15dp"/>
+
+            </LinearLayout>
+
+        </FrameLayout>
+
+    </FrameLayout>
     <LinearLayout
        android:layout_width="match_parent"
        android:orientation="vertical"
@@ -33,7 +65,6 @@
            android:layout_height="match_parent">
            <TextView
                android:id="@+id/txtChatLast"
-
                android:maxLength="15"
                android:paddingLeft="10dp"
                android:textSize="16dp"

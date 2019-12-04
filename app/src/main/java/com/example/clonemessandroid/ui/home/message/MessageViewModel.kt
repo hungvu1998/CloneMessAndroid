@@ -33,12 +33,18 @@ class MessageViewModel @Inject constructor(val messageApi: MessageApi,val detail
             .subscribe ({ idFriend ->
                 messageApi.getUserTest(idFriend)
                     .subscribeOn(Schedulers.io())
-                    .filter {
-                        it.message!=null
-                    }
+//                    .filter {
+//                        it.message!=null
+//                    }
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe({it->
-                        liveDataFriend.value=it
+                        Log.d("kiemtra",""+it.stories!!.size)
+                        if(it.stories!!.size !=0)
+                            getDetailStories(it)
+                        else
+                            liveDataFriend.value=it
+
+
                     },{it->
                         Log.d("kiemtra",""+it.message)
                     })
@@ -50,6 +56,7 @@ class MessageViewModel @Inject constructor(val messageApi: MessageApi,val detail
     }
     @SuppressLint("CheckResult")
     fun getListChat(idChat :String){
+        Log.d("kiemtra","fffff")
         detailChatApi.getListChat(idChat)
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
@@ -63,6 +70,25 @@ class MessageViewModel @Inject constructor(val messageApi: MessageApi,val detail
 
                 }
             )
+    }
+
+    @SuppressLint("CheckResult")
+    fun getDetailStories(userModel: UserModel){
+        Observable.fromIterable(userModel.stories)
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe{idStories->
+                detailChatApi.getDetailStories(idStories)
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe{
+                        userModel.listStories?.add(it)
+                        if(userModel.listStories?.size == userModel.stories?.size){
+                            liveDataFriend.value=userModel
+                        }
+                    }
+            }
+
     }
 
 
