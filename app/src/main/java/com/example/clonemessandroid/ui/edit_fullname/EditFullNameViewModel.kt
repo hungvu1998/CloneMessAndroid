@@ -11,29 +11,45 @@ import javax.inject.Inject
 
 class EditFullNameViewModel  @Inject
 constructor(val editProfileApi: EditProfileApi) : ViewModel(){
-    var liveDataResult: MutableLiveData<Boolean> = MutableLiveData()
+    var liveDataResult: MutableLiveData<Int> = MutableLiveData()
     @SuppressLint("CheckResult")
-    fun editFullName(userName: String,fullName:String){
-        liveDataResult.value=false
-        editProfileApi.editProfile(userName,fullName,null)
-            .subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribe({it->
-                if(it.message!!){
-                    liveDataResult.value=true
-                }
-                else{
+    fun editProfileUser(userName: String,fullName:String?,avatar:String?,email:String?){
+       if(fullName!=null){
+           liveDataResult.value=0
 
-                }
+           editProfileApi.editProfile(userName,fullName,null,null)
+               .subscribeOn(Schedulers.io())
+               .observeOn(AndroidSchedulers.mainThread())
+               .subscribe({it->
+                   if(it.message!!){
+                       liveDataResult.value=1
+                   }
+                   else{
+                       liveDataResult.value=2
+                   }
 
-            },{it->
-
-
-            })
-
+               },{it->
 
 
+               })
+       }else if(email!=null){
+           liveDataResult.value=0
+           editProfileApi.editProfile(userName,null,null,email)
+               .subscribeOn(Schedulers.io())
+               .observeOn(AndroidSchedulers.mainThread())
+               .subscribe({it->
+                   if(it.message!!){
+                       liveDataResult.value=1
+                   }
+                   else{
+                       liveDataResult.value=2
+                   }
 
+               },{it->
+
+
+               })
+       }
 
     }
 }

@@ -24,6 +24,10 @@ android {
     kapt {
         generateStubs = true
     }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
 
 }
 
@@ -115,6 +119,7 @@ dependencies {
     //easy permissions
     implementation 'pub.devrel:easypermissions:3.0.0'
 
-
+    //swipe back
+    implementation 'com.r0adkll:slidableactivity:2.0.6'
 
 }

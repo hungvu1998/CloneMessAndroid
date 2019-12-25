@@ -67,5 +67,10 @@
             android:theme="@style/AppTheme.NoActionBar">
 
         </activity>
+        <activity android:name=".ui.full_img.FullImageActivity"
+            android:theme="@style/AppTheme.SlidrActivityTheme"
+            >
+
+        </activity>
     </application>
 </manifest>

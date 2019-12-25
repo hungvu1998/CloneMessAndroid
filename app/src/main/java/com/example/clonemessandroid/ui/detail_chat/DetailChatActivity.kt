@@ -12,6 +12,7 @@ import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.os.Environment
+import android.os.Handler
 import android.provider.MediaStore
 import android.text.Editable
 import android.text.TextWatcher
@@ -19,10 +20,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.inputmethod.InputMethodManager
-import android.widget.FrameLayout
-import android.widget.PopupWindow
-import android.widget.RelativeLayout
-import android.widget.Toast
+import android.widget.*
 import androidx.annotation.RequiresApi
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
@@ -30,12 +28,14 @@ import androidx.fragment.app.DialogFragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.clonemessandroid.R
 import com.example.clonemessandroid.data.model.ChatDetailModel
 import com.example.clonemessandroid.data.model.UserModel
 import com.example.clonemessandroid.ui.call.CallActivity
 import com.example.clonemessandroid.ui.detail_chat.full_screen_img.FullScreenImgDialog
+import com.example.clonemessandroid.ui.full_img.FullImageActivity
 import com.example.clonemessandroid.util.ImageFilePath
 import com.example.clonemessandroid.viewmodels.ViewModelProvidersFactory
 import com.github.nkzawa.emitter.Emitter
@@ -43,6 +43,7 @@ import com.github.nkzawa.socketio.client.IO
 import com.google.gson.Gson
 import com.squareup.picasso.Picasso
 import dagger.android.support.DaggerAppCompatActivity
+import dagger.android.support.HasSupportFragmentInjector
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
@@ -61,8 +62,11 @@ import kotlin.collections.ArrayList
 
 class DetailChatActivity : DaggerAppCompatActivity (),RecyclerImgFullScreen{
     override fun loadImg(img: String) {
-        val dialog: DialogFragment= FullScreenImgDialog(img)
-        dialog.show(supportFragmentManager,"tag")
+        val intent = Intent(this,FullImageActivity::class.java)
+        intent.putExtra("url",img)
+        startActivity(intent)
+//        val dialog: DialogFragment= FullScreenImgDialog(img)
+//        dialog.show(supportFragmentManager,"tag")
 //        val inflater = baseContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
 //        val customView = inflater.inflate(R.layout.layout_dialog_img_fullscreen,null)
 //        val myPopUp = PopupWindow(customView,RelativeLayout.LayoutParams.MATCH_PARENT,RelativeLayout.LayoutParams.MATCH_PARENT)
@@ -85,11 +89,21 @@ class DetailChatActivity : DaggerAppCompatActivity (),RecyclerImgFullScreen{
     val PICK_IMAGE = 1
     val PICK_CAMERA = 2
     var json:String?=null
+    var layoutManager:LinearLayoutManager?=null
+    var totalPage = 0
     override fun onStart() {
         super.onStart()
+        if(socket.connected()){
+            Log.d("kiemtraData","da connect")
+        }
+        else{
+            Log.d("kiemtraData","chua connect")
+        }
+//
 //        if(json!=null)
 //        socket.emit("username",json)
     }
+    var page_count = 0
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.layout_chat_detail)
@@ -102,15 +116,16 @@ class DetailChatActivity : DaggerAppCompatActivity (),RecyclerImgFullScreen{
         viewModel = ViewModelProviders.of(this,providerFactory).get(DetailChatViewModel::class.java)
         initRecyclerView()
         if(idChat!=null){
-            viewModel.getListDetailChat(idChat!!)
+
+            viewModel.getListDetailChat(idChat!!,page_count)
         }
         if(!active){
-            txtActive?.setText("Offline")
+            txtActive?.text = "Offline"
         }
         else{
-            txtActive?.setText("Đang hoạt động")
+            txtActive?.text = "Đang hoạt động"
         }
-        txtUserName?.setText(to)
+        txtUserName?.text = to
         Picasso.get().load(imgFriend).into(story_user)
         loadGif()
 
@@ -157,6 +172,29 @@ class DetailChatActivity : DaggerAppCompatActivity (),RecyclerImgFullScreen{
         imgVideoCam?.setOnClickListener{
             startVideoCall()
         }
+        val  handler =  Handler()
+
+        recyclerListChatDetail?.addOnScrollListener(object : RecyclerView.OnScrollListener(){
+            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+                super.onScrolled(recyclerView, dx,dy)
+
+            }
+
+            override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
+                        if(layoutManager?.findFirstVisibleItemPosition() == 0 && page_count<totalPage-1){
+                            if(!adapter.getStatus()){
+                                page_count++
+                                adapter.setStatus(true)
+                                viewModel.getListDetailChat(idChat!!, page_count)
+                            }
+
+                        }
+
+
+
+            }
+        })
+
 
         edtContent?.addTextChangedListener(object : TextWatcher {
             override fun afterTextChanged(s: Editable?) {
@@ -179,10 +217,10 @@ class DetailChatActivity : DaggerAppCompatActivity (),RecyclerImgFullScreen{
             }
 
         }
-
         )
         subcribeObservers()
     }
+
 
     fun loadGif(){
         Glide.with(this).load(R.drawable.mimi1).into(mimi1)
@@ -240,8 +278,22 @@ class DetailChatActivity : DaggerAppCompatActivity (),RecyclerImgFullScreen{
 //            for (item in it){
 //                viewModel.liveDataChat.value=item
 //            }
-            listChatDetailModel = it as ArrayList<ChatDetailModel>
-            adapter.setArrayListDetail(it as ArrayList<ChatDetailModel>)
+
+            var newList = it.messages as ArrayList<ChatDetailModel>
+            listChatDetailModel.addAll(newList)
+            var listSort=listChatDetailModel.sortedWith(compareBy { it.timestamp })
+            listChatDetailModel.clear()
+            listChatDetailModel.addAll(listSort)
+            adapter.setArrayListDetail(listChatDetailModel ,false)
+            totalPage=it.pageCount!!
+            if(page_count == 0){
+                recyclerListChatDetail?.scrollToPosition(adapter.arrayList.size)
+            }else{
+                val position = 10 * page_count
+                recyclerListChatDetail?.scrollToPosition(position)
+            }
+
+          //  findViewById<ProgressBar>(R.id.progress_bar).visibility=View.GONE
 
         })
         viewModel.liveDataChat.observe(this, Observer { it->
@@ -249,7 +301,7 @@ class DetailChatActivity : DaggerAppCompatActivity (),RecyclerImgFullScreen{
                 it.timestamp= System.currentTimeMillis()
             }
            adapter.addItemArralyListDetail(it)
-            recyclerListChatDetail?.scrollToPosition(adapter.arrayList.size -1)
+            recyclerListChatDetail?.scrollToPosition(adapter.arrayList.size )
         })
         viewModel.livedataImgUpdaload.observe(this, Observer {it->
             var chatDetailModel = ChatDetailModel()
@@ -263,7 +315,6 @@ class DetailChatActivity : DaggerAppCompatActivity (),RecyclerImgFullScreen{
             chatDetailModel.type=3
             val gson = Gson()
             val json = gson.toJson(chatDetailModel)
-
             Log.d("kiemtraLive2",""+chatDetailModel.content)
             socket.emit("message",json)
         })
@@ -296,9 +347,10 @@ class DetailChatActivity : DaggerAppCompatActivity (),RecyclerImgFullScreen{
     }
     private fun initRecyclerView(){
         adapter = DetailChatRecyclerAdapter(this,from,imgFriend,this)
-        adapter.setArrayListDetail(listChatDetailModel)
-        val layoutManager= LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
-        layoutManager.stackFromEnd=true
+        adapter.setArrayListDetail(listChatDetailModel,true)
+        layoutManager= LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
+        layoutManager!!.stackFromEnd=true
+        //recyclerListChatDetail.isNestedScrollingEnabled = false
         recyclerListChatDetail?.layoutManager = layoutManager
         recyclerListChatDetail?.adapter = adapter
     }
@@ -371,7 +423,7 @@ class DetailChatActivity : DaggerAppCompatActivity (),RecyclerImgFullScreen{
             }
         }
         else if(requestCode == PICK_CAMERA && resultCode == Activity.RESULT_OK && data != null ){
-            var photo : Bitmap = data!!.extras!!.get("data") as Bitmap
+            var photo : Bitmap = data.extras!!.get("data") as Bitmap
             var file : File = createFile(photo)
 
             viewModel.upLoadImage(file)
@@ -382,7 +434,6 @@ class DetailChatActivity : DaggerAppCompatActivity (),RecyclerImgFullScreen{
             }
             chatDetailModel.idChat=idChat
             chatDetailModel.content= file.path
-            Log.d("kiemtra", chatDetailModel.content.toString())
             chatDetailModel.from=from
             chatDetailModel.to=to
             chatDetailModel.type=3
@@ -430,6 +481,8 @@ class DetailChatActivity : DaggerAppCompatActivity (),RecyclerImgFullScreen{
 
                 }
             }
+
+
             REQUEST_PERMISSION_GALLERY->{
                 if((grantResults.isNotEmpty() &&  grantResults[0] == PackageManager.PERMISSION_GRANTED)){
                     succesPermissionpicture()
@@ -445,22 +498,19 @@ class DetailChatActivity : DaggerAppCompatActivity (),RecyclerImgFullScreen{
         startActivityForResult(intent,PICK_CAMERA)
     }
 
-    override fun onStop() {
-        super.onStop()
-
-    }
-
     override fun onDestroy() {
         super.onDestroy()
         socket.disconnect()
     }
+
     private val onNewMessage =
         Emitter.Listener {
             runOnUiThread {
                 val data= it[0] as JSONObject
                 idChat= data["idChat"].toString()
-
                 if(data["from"].toString() != from){
+
+                    Log.d("kiemtraData",""+data)
                     var chatDetailModel = ChatDetailModel()
                     chatDetailModel.idChat = idChat
                     chatDetailModel.content = data["content"].toString()

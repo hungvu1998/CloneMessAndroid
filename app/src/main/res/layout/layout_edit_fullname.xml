@@ -22,10 +22,10 @@
         <TextView
             android:layout_weight="1"
             android:layout_width='0dp'
-            android:text="Full name"
             android:textColor="@color/colorBlack"
             android:gravity="center"
             android:paddingLeft="10dp"
+            android:id="@+id/titleEdit"
             android:textSize="18dp"
             android:textStyle="bold"
             android:layout_height="match_parent"/>
@@ -48,12 +48,14 @@
             android:orientation="vertical"
             android:layout_width="match_parent"
             android:layout_height="match_parent">
-            <EditText
+            <androidx.appcompat.widget.AppCompatEditText
                 android:layout_width="match_parent"
                 android:background="@color/colorWhite"
                 android:layout_marginTop="20dp"
                 android:padding="10dp"
-                android:id="@+id/edtFullName"
+                android:drawablePadding="10dp"
+                android:ems="10"
+                android:id="@+id/edtEdit"
                 android:layout_height="wrap_content"/>
 
             <TextView

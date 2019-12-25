@@ -4,6 +4,7 @@
     android:layout_height="match_parent">
     <include layout="@layout/progessbar_chat_detail"/>
     <include layout="@layout/fragment_chated"/>
+
     <LinearLayout
         android:visibility="gone"
         android:id="@+id/layout_sticker"

@@ -34,6 +34,7 @@ class RegisterActivity : DaggerAppCompatActivity(),RegisterNavigator{
     fun onLoginSucce(userModel: UserModel){
         val intent= Intent(this, HomeActivity::class.java)
         intent.putExtra("userModel",userModel)
+        intent.putExtra("userName",userModel.username)
         intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK
         startActivity(intent)
 

@@ -1,6 +1,7 @@
 package com.example.clonemessandroid.ui.camera
 
 import android.Manifest
+import android.app.Activity
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.BitmapFactory
@@ -21,9 +22,7 @@ import com.example.clonemessandroid.ui.call.CameraPreview
 import com.example.clonemessandroid.util.ImageFilePath
 import java.io.File
 import android.graphics.Bitmap
-
-
-
+import com.example.clonemessandroid.ui.home.HomeActivity
 
 
 class CameraActivity : DaggerAppCompatActivity() {
@@ -58,6 +57,7 @@ class CameraActivity : DaggerAppCompatActivity() {
         btnCam.setOnClickListener {
             mCamera?.takePicture(null, null, mPicture)
         }
+
         btnSwitch.setOnClickListener {
             val camerasNumber = Camera.getNumberOfCameras()
             if (camerasNumber > 1) {
@@ -76,10 +76,12 @@ class CameraActivity : DaggerAppCompatActivity() {
         super.onActivityResult(requestCode, resultCode, data)
         if (requestCode == PICK_IMAGE && resultCode == RESULT_OK && null != data) {
                 val path = ImageFilePath.getPathFromUri(this,data.data!!)
-                val file = File(path)
-                Log.d("kiemtra",""+file)
 
-//                viewModel.upLoadImage(file)
+            val previousScreen  = Intent ()
+            previousScreen.putExtra("path", path)
+            setResult(Activity.RESULT_OK,previousScreen)
+            finish()
+
 //
 //                var chatDetailModel = ChatDetailModel()
 //                if (idChat==null){
@@ -144,7 +146,7 @@ class CameraActivity : DaggerAppCompatActivity() {
         return cameraId
     }
     fun getPictureCallback(): Camera.PictureCallback{
-        Log.d("kiemtra","hello")
+
         return Camera.PictureCallback { data, camera ->
             bitmap = BitmapFactory.decodeByteArray(data, 0, data.size)
 

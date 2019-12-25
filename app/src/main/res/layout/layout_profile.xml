@@ -9,26 +9,39 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
        <include layout="@layout/progessbar_profile"/>
-        <LinearLayout
-            android:padding="20dp"
-            android:orientation="vertical"
-            android:background="@color/colorWhite"
-            android:gravity="center"
+        <FrameLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
-            <de.hdodenhof.circleimageview.CircleImageView
-                android:layout_width="170dp"
-                android:id="@+id/img_profile"
-                android:layout_height="170dp"/>
-            <TextView
-                android:layout_width="match_parent"
-                android:id="@+id/txtFullName"
-                android:textSize="23dp"
-                android:textColor="@color/colorBlack"
-                android:textStyle="bold"
+
+            <LinearLayout
+                android:padding="20dp"
+                android:orientation="vertical"
+                android:background="@color/colorWhite"
                 android:gravity="center"
-                android:layout_height="match_parent"/>
-        </LinearLayout>
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+                <de.hdodenhof.circleimageview.CircleImageView
+                    android:layout_width="170dp"
+                    android:id="@+id/img_profile"
+                    android:layout_height="170dp"/>
+                <TextView
+                    android:layout_width="match_parent"
+                    android:id="@+id/txtFullName"
+                    android:textSize="23dp"
+                    android:textColor="@color/colorBlack"
+                    android:textStyle="bold"
+                    android:gravity="center"
+                    android:layout_height="match_parent"/>
+            </LinearLayout>
+            <ProgressBar
+                android:visibility="gone"
+                android:outlineAmbientShadowColor="@color/colorWhite"
+                android:id="@+id/progress_barImage"
+                android:layout_width="match_parent"
+                android:layout_gravity="center"
+                android:layout_height="wrap_content"/>
+        </FrameLayout>
+
         <TextView
             android:layout_width="match_parent"
             android:text="Account"
@@ -66,6 +79,7 @@
         <View
             android:layout_width="match_parent"
             android:layout_height="1dp"/>
+
         <LinearLayout
             android:layout_width="match_parent"
             android:orientation="horizontal"
@@ -84,6 +98,38 @@
                 <TextView
                     android:layout_width="0dp"
                     android:text="Male"
+                    android:gravity="end"
+                    android:textSize="16dp"
+                    android:layout_weight="1"
+                    android:layout_height="match_parent"/>
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:src="@drawable/ic_keyboard_arrow_right_grey_24dp"
+                    android:layout_height="match_parent"/>
+            </LinearLayout>
+        </LinearLayout>
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"/>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:orientation="horizontal"
+            android:padding="10dp"
+            android:id="@+id/layout_email"
+            android:background="@color/colorWhite"
+            android:layout_height="wrap_content">
+            <TextView
+                android:layout_width="wrap_content"
+                android:text="Email"
+                android:textSize="16dp"
+                android:textColor="@color/colorBlack"
+                android:layout_height="match_parent"/>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+                <TextView
+                    android:layout_width="0dp"
+                    android:id="@+id/txtEmail"
                     android:gravity="end"
                     android:textSize="16dp"
                     android:layout_weight="1"

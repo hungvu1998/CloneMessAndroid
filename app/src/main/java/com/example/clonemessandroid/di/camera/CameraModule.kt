@@ -7,5 +7,8 @@ import retrofit2.Retrofit
 
 @Module
 class CameraModule {
-
+    @Provides
+    fun provideDetailChatApi(retrofit: Retrofit): DetailChatApi {
+        return retrofit.create(DetailChatApi::class.java)
+    }
 }

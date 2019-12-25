@@ -108,6 +108,7 @@ class LoginActivity : DaggerAppCompatActivity(),LoginNavigator {
     fun onLoginSucce(userModel: UserModel){
         val intent= Intent(this,HomeActivity::class.java)
         intent.putExtra("userModel",userModel)
+        intent.putExtra("userName",userModel.username)
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
         intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
         startActivity(intent)

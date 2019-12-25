@@ -33,11 +33,11 @@
         android:layout_height="match_parent">
 
         <ImageView
-            android:layout_marginRight="15dp"
-            android:layout_width="30dp"
-            android:layout_height="30dp"
             android:id="@+id/imgCamera"
+            android:layout_width="30dp"
+            android:layout_height="wrap_content"
             android:layout_gravity="center"
+            android:layout_marginRight="15dp"
             android:src="@drawable/ic_camera_alt_black_24dp" />
         <ImageView
             android:layout_marginRight="15dp"

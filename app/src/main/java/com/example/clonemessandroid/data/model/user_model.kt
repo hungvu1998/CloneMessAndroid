@@ -19,6 +19,10 @@ class UserModel() : Parcelable{
     var avatar:String?=null
 
 
+    @SerializedName("email")
+    @Expose
+    var email:String?=null
+
     @SerializedName("message")
     @Expose
     var message:Boolean?=null
@@ -47,6 +51,7 @@ class UserModel() : Parcelable{
         username = parcel.readString()
         fullname = parcel.readString()
         avatar = parcel.readString()
+        email=parcel.readString()
         message = parcel.readValue(Boolean::class.java.classLoader) as? Boolean
         friends = parcel.createStringArrayList()
         active = parcel.readValue(Boolean::class.java.classLoader) as? Boolean
@@ -59,6 +64,7 @@ class UserModel() : Parcelable{
         parcel.writeString(username)
         parcel.writeString(fullname)
         parcel.writeString(avatar)
+        parcel.writeString(email)
         parcel.writeValue(message)
         parcel.writeStringList(friends)
         parcel.writeValue(active)

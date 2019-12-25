@@ -69,9 +69,11 @@ class StoryRecyclerAdapter(var recyclerClickItem: RecyclerClickItem) : RecyclerV
                 if (userModel.active != null) {
                     //hien thi story
                     if (userModel.stories!!.size != 0) {
+
                         story_user.visibility = View.VISIBLE
                         user_active.visibility = View.GONE
                         layout_all.visibility = View.VISIBLE
+
                         Picasso.get().load(userModel.listStories!![userModel.listStories!!.size - 1].imagePath).into(story_user)
                     } else {
                         if(userModel.active!!){

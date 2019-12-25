@@ -1,5 +1,7 @@
 package com.example.clonemessandroid.ui.home
 
+import android.app.Activity
+import android.content.Intent
 import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.util.Log
@@ -30,15 +32,15 @@ class HomeActivity : DaggerAppCompatActivity(),BottomNavigationView.OnNavigation
 
     lateinit var adapter: ViewPageHomeAdapter
     lateinit var userModel:UserModel
+    lateinit var userName: String
     var listUser:ArrayList<UserModel> = ArrayList()
 
     lateinit var onBack :OnBack
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.layout_home)
-        userModel= intent.getParcelableExtra("userModel")
-
-
+       // userModel= intent.getParcelableExtra("userModel")
+        userName=intent.getStringExtra("userName")
 
 
 
@@ -49,7 +51,10 @@ class HomeActivity : DaggerAppCompatActivity(),BottomNavigationView.OnNavigation
         bottom_navigation.setOnNavigationItemSelectedListener (this)
     }
 
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
 
+    }
 
     override fun onNavigationItemSelected(p0: MenuItem): Boolean {
       when(p0.itemId){
@@ -71,7 +76,7 @@ class HomeActivity : DaggerAppCompatActivity(),BottomNavigationView.OnNavigation
         viewpager?.offscreenPageLimit=3
     }
     private fun subscribeObervers(){
-        homeViewModel.getUserInfo(userModel)
+        homeViewModel.getUserInfo(userName)
     }
     fun setOnBackListener(onBack: OnBack){
         this.onBack=onBack
@@ -82,6 +87,11 @@ class HomeActivity : DaggerAppCompatActivity(),BottomNavigationView.OnNavigation
         }
         else
         super.onBackPressed()
+
+    }
+
+    override fun onStart() {
+        super.onStart()
 
     }
 

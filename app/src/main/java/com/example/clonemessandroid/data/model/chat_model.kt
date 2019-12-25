@@ -40,6 +40,11 @@ class ChatModel{
     @Expose
     var messages:List<ChatDetailModel>?=null
 
+
+    @SerializedName("pageCount")
+    @Expose
+    var pageCount:Int?=null
+
     var userFriend:UserModel ?=null
 }
 

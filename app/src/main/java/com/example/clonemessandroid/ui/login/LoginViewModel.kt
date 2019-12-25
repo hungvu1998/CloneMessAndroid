@@ -47,7 +47,6 @@ constructor(val loginApi: LoginApi,var sessionManager: SessionManager): ViewMode
     }
     @SuppressLint("CheckResult")
     fun loginNormal(userName: String, pass: String) {
-        Log.d("kiemtra",""+userName)
         loginApi.login(userName,pass)
 
             .subscribeOn(Schedulers.io())
@@ -78,6 +77,7 @@ constructor(val loginApi: LoginApi,var sessionManager: SessionManager): ViewMode
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe({ it->
+
                         if(it.message!!){
                             getNavigator()!!.succes(true,it)
                         } else{
@@ -85,6 +85,7 @@ constructor(val loginApi: LoginApi,var sessionManager: SessionManager): ViewMode
                         }
 
                     },{it->
+
                         getNavigator()!!.succes(false,null)
                     })
             }

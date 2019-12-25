@@ -9,10 +9,7 @@ import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.FrameLayout
-import android.widget.ImageView
-import android.widget.LinearLayout
-import android.widget.TextView
+import android.widget.*
 import androidx.fragment.app.DialogFragment
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
@@ -35,7 +32,7 @@ import kotlin.collections.ArrayList
 class DetailChatRecyclerAdapter(var context: Context, var usernameCurrent:String, var imgFriend :String,val recyclerImgFullScreen: RecyclerImgFullScreen) : RecyclerView.Adapter<RecyclerView.ViewHolder>(){
 
     var arrayList: ArrayList<ChatDetailModel> = ArrayList()
-
+    var loading  = false
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         val view = LayoutInflater.from(parent.context).inflate(R.layout.item_chat_detail, parent, false)
@@ -43,17 +40,26 @@ class DetailChatRecyclerAdapter(var context: Context, var usernameCurrent:String
     }
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
-        (holder as PostViewHolder).bind(context,arrayList[position],position,usernameCurrent,imgFriend,recyclerImgFullScreen)
+        (holder as PostViewHolder).bind(context,position,usernameCurrent,imgFriend,recyclerImgFullScreen)
 
     }
 
     override fun getItemCount(): Int {
-        return  arrayList.size
+        return  arrayList.size +1
+    }
+
+    fun getStatus(): Boolean{
+        return this.loading
+    }
+    fun setStatus(loading: Boolean){
+        this.loading=loading
+        notifyDataSetChanged()
     }
 
 
-    fun setArrayListDetail(arrayList: ArrayList<ChatDetailModel>){
+    fun setArrayListDetail(arrayList: ArrayList<ChatDetailModel>,loading:Boolean){
         this.arrayList = arrayList
+        this.loading=loading
         notifyDataSetChanged()
     }
 
@@ -72,66 +78,77 @@ class DetailChatRecyclerAdapter(var context: Context, var usernameCurrent:String
         private var layout_chat:LinearLayout = itemView.findViewById(R.id.layout_chat)
         private var layout_img:FrameLayout = itemView.findViewById(R.id.layout_img)
         private var preview_image:ImageView =  itemView.findViewById(R.id.preview_image)
-
+        private var progress_bar:ProgressBar = itemView.findViewById(R.id.progress_bar)
+        private var layoutmain:LinearLayout  = itemView.findViewById(R.id.layoutmain)
 
         @SuppressLint("CheckResult")
-        fun bind(context: Context, chatDetailModel: ChatDetailModel, position:Int, usernameCurrent:String, imgFriend :String, recyclerImgFullScreen: RecyclerImgFullScreen) {
+        fun bind(context: Context, position:Int, usernameCurrent:String, imgFriend :String, recyclerImgFullScreen: RecyclerImgFullScreen) {
+            if(position == 0){
+                layoutmain.visibility=View.GONE
+                if(loading)
+                    progress_bar.visibility=View.VISIBLE
+                else
+                    progress_bar.visibility=View.GONE
+            }else{
+                layoutmain.visibility=View.VISIBLE
+                val chatDetailModel = arrayList[position -1]
+                progress_bar.visibility=View.GONE
 
-            txtTime.visibility=View.GONE
-            if(chatDetailModel.from == usernameCurrent){
-                containerLayoutDetailChat.gravity=Gravity.END
-                img_profile.visibility=View.GONE
-            }
-            else{
-                containerLayoutDetailChat.gravity=Gravity.START
-                img_profile.visibility=View.VISIBLE
-                Picasso.get().load(imgFriend).into(img_profile)
-            }
-
-            if(chatDetailModel.type == 1){
-                //text
-                txtChat.visibility=View.VISIBLE
-                layout_chat.visibility=View.VISIBLE
-                img_story.visibility=View.GONE
-                layout_img.visibility=View.GONE
-                txtChat.text = chatDetailModel.content
-
-            }
-            else if (chatDetailModel.type == 2){
-                //Stiker
-                txtChat.visibility=View.GONE
-                layout_chat.visibility=View.GONE
-                img_story.visibility=View.VISIBLE
-                layout_img.visibility=View.GONE
-                //Picasso.get().load(context.resources.getIdentifier(chatDetailModel.content,"drawable",context.packageName)).into(img_chatdetail)
-                Glide.with(context).load(context.resources.getIdentifier(chatDetailModel.content,"drawable",context.packageName)).into(img_story)
-            }
-            else{
-                Log.d("kiemta",""+chatDetailModel.content)
-                //image
-                txtChat.visibility=View.GONE
-                layout_chat.visibility=View.GONE
-                img_story.visibility=View.GONE
-                layout_img.visibility=View.VISIBLE
-                //Picasso.get().load(chatDetailModel.content).into(preview_image)
-                Glide.with(context).load(chatDetailModel.content).into(preview_image)
-                preview_image.setOnClickListener {
-                    recyclerImgFullScreen.loadImg(chatDetailModel.content!!)
+                txtTime.visibility=View.GONE
+                if(chatDetailModel.from == usernameCurrent){
+                    containerLayoutDetailChat.gravity=Gravity.END
+                    img_profile.visibility=View.GONE
                 }
-            }
+                else{
+                    containerLayoutDetailChat.gravity=Gravity.START
+                    img_profile.visibility=View.VISIBLE
+                    Picasso.get().load(imgFriend).into(img_profile)
+                }
+                if(chatDetailModel.type == 1){
+                    //text
+                    txtChat.visibility=View.VISIBLE
+                    layout_chat.visibility=View.VISIBLE
+                    img_story.visibility=View.GONE
+                    layout_img.visibility=View.GONE
+                    txtChat.text = chatDetailModel.content
+
+                }
+                else if (chatDetailModel.type == 2){
+                    //Stiker
+                    txtChat.visibility=View.GONE
+                    layout_chat.visibility=View.GONE
+                    img_story.visibility=View.VISIBLE
+                    layout_img.visibility=View.GONE
+                    //Picasso.get().load(context.resources.getIdentifier(chatDetailModel.content,"drawable",context.packageName)).into(img_chatdetail)
+                    Glide.with(context).load(context.resources.getIdentifier(chatDetailModel.content,"drawable",context.packageName)).into(img_story)
+                }
+                else{
+                    //image
+                    txtChat.visibility=View.GONE
+                    layout_chat.visibility=View.GONE
+                    img_story.visibility=View.GONE
+                    layout_img.visibility=View.VISIBLE
+                    //Picasso.get().load(chatDetailModel.content).into(preview_image)
+                    Glide.with(context).load(chatDetailModel.content).into(preview_image)
+                    preview_image.setOnClickListener {
+                        recyclerImgFullScreen.loadImg(chatDetailModel.content!!)
+                    }
+                }
 
 
 
-            if(position== 0){
-                txtTime.visibility=View.VISIBLE
-                txtTime.setText(getDateTime(chatDetailModel.timestamp!!))
-            }
-            else{
-                if(chatDetailModel.timestamp!! - arrayList[position-1].timestamp!! > 3600000){
+                if(position== 1){
                     txtTime.visibility=View.VISIBLE
                     txtTime.setText(getDateTime(chatDetailModel.timestamp!!))
                 }
+                else{
+                    if(chatDetailModel.timestamp!! - arrayList[position-1].timestamp!! > 3600000){
+                        txtTime.visibility=View.VISIBLE
+                        txtTime.setText(getDateTime(chatDetailModel.timestamp!!))
+                    }
+                }
             }
+
         }
 
 

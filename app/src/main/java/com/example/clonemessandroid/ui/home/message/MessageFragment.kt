@@ -32,6 +32,7 @@ import androidx.recyclerview.widget.DividerItemDecoration
 import android.app.Activity
 import android.content.Context
 import android.view.inputmethod.InputMethodManager
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.example.clonemessandroid.data.model.ChatModel
 import com.example.clonemessandroid.ui.camera.CameraActivity
 import com.example.clonemessandroid.ui.detail_chat.DetailChatActivity
@@ -43,6 +44,7 @@ import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
 import org.json.JSONObject
+import java.io.File
 
 
 class MessageFragment : DaggerFragment(),RecyclerClickItem,OnBack{
@@ -86,7 +88,7 @@ class MessageFragment : DaggerFragment(),RecyclerClickItem,OnBack{
     lateinit var adapterFriend: FriendRecyclerAdapter
     lateinit var adapterListChat : ListChatRecyclerAdapter
 
-     var socket = IO.socket("https://clonemessage.herokuapp.com/")
+     private var socket = IO.socket("https://clonemessage.herokuapp.com/")
     val REQUEST_PERMISSION_CAMERA=5
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -96,7 +98,10 @@ class MessageFragment : DaggerFragment(),RecyclerClickItem,OnBack{
 
     }
 
-
+    override fun onStart() {
+        super.onStart()
+       // socket.connect()
+    }
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         return inflater.inflate(R.layout.fragment_message, container, false)
 
@@ -112,75 +117,9 @@ class MessageFragment : DaggerFragment(),RecyclerClickItem,OnBack{
             intent.putExtra("userName",userCurrent.username)
             startActivity(intent)
         }
-        homeViewModel.liveDataUserModel.observe(this, Observer {it->
-            userCurrent=it
-            Picasso.get().load(it.avatar).into(profile_image)
-
-            it.friends?.let { it1 -> messageViewModel.getProfileFriend(it1) }
-
-            var userModelNew= UserModel()
-            userModelNew.username=userCurrent.username
-            val gson = Gson()
-            val json = gson.toJson(userModelNew)
-            socket.emit("username",json)
-        })
-        messageViewModel.liveDataFriend.observe(this, Observer {it->
-            Log.d("kiemtra",""+it.username)
-            listFriend.add(it)
-            listFriend2.add(it)
-            if(listFriend.size == userCurrent.friends!!.size +1){
-                adapter.setFriendList(listFriend)
-            }
-            if(listFriend2.size == userCurrent.friends!!.size){
-                adapterFriend.setFriendList(listFriend2)
-                Observable.fromIterable(userCurrent.chats)
-                    .subscribeOn(Schedulers.io())
-                    .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe{it->
-                        messageViewModel.getListChat(it)
-                    }
-            }
-        })
-
-        messageViewModel.liveDataChatModel.observe(this, Observer { it->
-
-
-            var chatModel = ChatModel()
-            chatModel._id = it._id
-            chatModel.messages= it.messages!!.sortedByDescending {it.timestamp }
-            if (chatModel.messages!![0].from == userCurrent.username){
-                for(item in listFriend2){
-                    if(item.username == chatModel.messages!![0].to){
-                       chatModel.userFriend=item
-
-                        break
-                    }
-                }
-
-            }
-            else{
-                for(item in listFriend2){
-                    if(item.username == chatModel.messages!![0].from){
-                        chatModel.userFriend=item
-
-                        break
-                    }
-                }
-
-            }
-
-            adapterListChat.addItemArrayListChat(chatModel)
-
-        })
-
         imgCamera?.setOnClickListener {
             permission()
         }
-
-
-
-        socket.on("message", onNewMessage)
-
         edtSearchFriend?.onFocusChangeListener = View.OnFocusChangeListener { view, hasFocus ->
             if (hasFocus) {
                 txtHuySearchFriend?.visibility=View.VISIBLE
@@ -224,21 +163,26 @@ class MessageFragment : DaggerFragment(),RecyclerClickItem,OnBack{
                 adapterFriend.setFriendList(list)
             }
 
-        }
+        })
+        swipe_refresh_message.setOnRefreshListener (object :SwipeRefreshLayout.OnRefreshListener{
+            override fun onRefresh() {
+            }
+        })
 
-        )
+        socket.on("message", onNewMessage)
+
+
 
         initRecyclerView()
         initRecyclerViewListChat()
         initRecyclerViewFriend()
         subscribeObservers()
     }
-    private val onNewMessage =
-        Emitter.Listener {
-
+    private val onNewMessage = Emitter.Listener {
             activity?.runOnUiThread {
                 var _isExist = false
                 val data= it[0] as JSONObject
+                Log.d("kiemtra",""+data)
                 if(userCurrent.chats!=null){
                     for (item in userCurrent.chats!!) {
                         if (item == data["idChat"].toString()){
@@ -279,7 +223,7 @@ class MessageFragment : DaggerFragment(),RecyclerClickItem,OnBack{
 
                     }
 
-                    messageViewModel.getListChat(data["idChat"].toString())
+                   // messageViewModel.getListChat(data["idChat"].toString())
                 }
 
                 //                idChat= data["idChat"].toString()
@@ -294,8 +238,66 @@ class MessageFragment : DaggerFragment(),RecyclerClickItem,OnBack{
             }
         }
     fun subscribeObservers(){
+        homeViewModel.liveDataUserModel.observe(this, Observer {it->
+            userCurrent=it
+            Picasso.get().load(it.avatar).into(profile_image)
 
+            it.friends?.let { it1 -> messageViewModel.getProfileFriend(it1) }
 
+            var userModelNew= UserModel()
+            userModelNew.username=userCurrent.username
+            val gson = Gson()
+            val json = gson.toJson(userModelNew)
+              socket.emit("username",json)
+        })
+        messageViewModel.liveDataFriend.observe(this, Observer {it->
+            listFriend.add(it)
+            listFriend2.add(it)
+            if(listFriend.size == userCurrent.friends!!.size +1){
+                adapter.setFriendList(listFriend)
+                progress_bar?.visibility=View.GONE
+            }
+            if(listFriend2.size == userCurrent.friends!!.size){
+                adapterFriend.setFriendList(listFriend2)
+                Observable.fromIterable(userCurrent.chats)
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe{it->
+                        //  messageViewModel.getListChat(it)
+                    }
+            }
+        })
+        messageViewModel.livedataImgUpdaload.observe(this, Observer {it->
+            messageViewModel.upStory(it.string().toString())
+        })
+        messageViewModel.liveDataStories.observe(this, Observer {it-> })
+        messageViewModel.liveDataChatModel.observe(this, Observer {it->
+            var chatModel = ChatModel()
+            chatModel._id = it._id
+            chatModel.messages= it.messages!!.sortedByDescending {it.timestamp }
+            if (chatModel.messages!![0].from == userCurrent.username){
+                for(item in listFriend2){
+                    if(item.username == chatModel.messages!![0].to){
+                        chatModel.userFriend=item
+
+                        break
+                    }
+                }
+
+            }
+            else{
+                for(item in listFriend2){
+                    if(item.username == chatModel.messages!![0].from){
+                        chatModel.userFriend=item
+
+                        break
+                    }
+                }
+            }
+
+            adapterListChat.addItemArrayListChat(chatModel)
+
+        })
 
     }
     private fun initRecyclerView() {
@@ -312,8 +314,6 @@ class MessageFragment : DaggerFragment(),RecyclerClickItem,OnBack{
         recyclerListMess?.layoutManager = layoutManager
         recyclerListMess?.adapter = adapterListChat
     }
-
-
     private fun initRecyclerViewFriend() {
         adapterFriend= FriendRecyclerAdapter()
         adapterFriend.setFriendList(listFriend2)
@@ -333,16 +333,16 @@ class MessageFragment : DaggerFragment(),RecyclerClickItem,OnBack{
             succesPermission()
         }
     }
+    val ACTIVITY_CAMERA = 100
     fun succesPermission(){
 //        val intent =  Intent("android.media.action.IMAGE_CAPTURE")
 //        startActivity(intent)
         val intent = Intent(activity,CameraActivity::class.java)
-        startActivity(intent)
+        startActivityForResult(intent,ACTIVITY_CAMERA)
     }
 
     override fun onDestroy() {
         super.onDestroy()
-        Log.d("kiemtra","dis")
         socket.disconnect()
     }
     override fun onBack(){
@@ -361,5 +361,15 @@ class MessageFragment : DaggerFragment(),RecyclerClickItem,OnBack{
             val imm = activity.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
             imm.hideSoftInputFromWindow(view.windowToken, 0)
         }
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if(requestCode == ACTIVITY_CAMERA && resultCode ==Activity.RESULT_OK && data!=null){
+            val file = File(data.getStringExtra("path"))
+            Log.d("kiemtra",""+file)
+            messageViewModel.upLoadImage(file)
+        }
+
     }
 }

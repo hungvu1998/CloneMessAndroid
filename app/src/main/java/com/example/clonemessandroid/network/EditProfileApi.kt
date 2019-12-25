@@ -7,5 +7,8 @@ import retrofit2.http.*
 interface EditProfileApi{
     @PUT("user/{name}")
     @FormUrlEncoded
-    abstract fun editProfile(@Path("name") name: String,@Field("fullname") fullname:String?, @Field("avatar") avatar:String?) : Observable<UserModel>
+    abstract fun editProfile(@Path("name") name: String,@Field("fullname") fullname:String?, @Field("avatar") avatar:String?, @Field("email") email:String?) : Observable<UserModel>
+
+
+
 }
