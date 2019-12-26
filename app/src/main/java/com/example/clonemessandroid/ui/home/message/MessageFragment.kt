@@ -39,6 +39,7 @@ import com.example.clonemessandroid.ui.detail_chat.DetailChatActivity
 import com.example.clonemessandroid.ui.profile.ProfileActivity
 import com.github.nkzawa.emitter.Emitter
 import com.github.nkzawa.socketio.client.IO
+import com.github.nkzawa.socketio.client.Socket
 import com.google.gson.Gson
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -88,7 +89,8 @@ class MessageFragment : DaggerFragment(),RecyclerClickItem,OnBack{
     lateinit var adapterFriend: FriendRecyclerAdapter
     lateinit var adapterListChat : ListChatRecyclerAdapter
 
-     private var socket = IO.socket("https://clonemessage.herokuapp.com/")
+    @Inject
+     lateinit var socket :Socket
     val REQUEST_PERMISSION_CAMERA=5
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -100,6 +102,8 @@ class MessageFragment : DaggerFragment(),RecyclerClickItem,OnBack{
 
     override fun onStart() {
         super.onStart()
+
+
        // socket.connect()
     }
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -111,7 +115,6 @@ class MessageFragment : DaggerFragment(),RecyclerClickItem,OnBack{
         super.onActivityCreated(savedInstanceState)
         (activity as HomeActivity).setOnBackListener(this)
 
-        socket.connect()
         profile_image?.setOnClickListener {
             val intent= Intent(context, ProfileActivity::class.java)
             intent.putExtra("userName",userCurrent.username)
@@ -166,6 +169,7 @@ class MessageFragment : DaggerFragment(),RecyclerClickItem,OnBack{
         })
         swipe_refresh_message.setOnRefreshListener (object :SwipeRefreshLayout.OnRefreshListener{
             override fun onRefresh() {
+
             }
         })
 
@@ -223,7 +227,7 @@ class MessageFragment : DaggerFragment(),RecyclerClickItem,OnBack{
 
                     }
 
-                   // messageViewModel.getListChat(data["idChat"].toString())
+                    messageViewModel.getListChat(data["idChat"].toString())
                 }
 
                 //                idChat= data["idChat"].toString()
@@ -263,7 +267,7 @@ class MessageFragment : DaggerFragment(),RecyclerClickItem,OnBack{
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe{it->
-                        //  messageViewModel.getListChat(it)
+                          messageViewModel.getListChat(it)
                     }
             }
         })

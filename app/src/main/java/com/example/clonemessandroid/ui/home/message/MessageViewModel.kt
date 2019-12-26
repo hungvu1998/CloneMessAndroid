@@ -48,7 +48,7 @@ class MessageViewModel @Inject constructor(val messageApi: MessageApi,val detail
                         else
                             liveDataFriend.value=it
                     },{
-                        Log.e("kiemtra getProfileFriend",""+it.message)
+                        Log.e("kiemtraProfileFriend",""+it.message)
                     })
             }
 
@@ -73,23 +73,23 @@ class MessageViewModel @Inject constructor(val messageApi: MessageApi,val detail
 //
 //            })
     }
-   // @SuppressLint("CheckResult")
-//    fun getListChat(idChat :String){
-//
-//        detailChatApi.getListChatApi(idChat)
-//            .subscribeOn(Schedulers.io())
-//            .observeOn(AndroidSchedulers.mainThread())
-//            .subscribeBy (
-//                onNext = {
-//                    liveDataChatModel.value=it
-//                },onError = {
-//                    Log.e("kiemtra","Error getListChat - "+it.message)
-//                },
-//                onComplete = {
-//
-//                }
-//            )
-//    }
+    @SuppressLint("CheckResult")
+    fun getListChat(idChat :String){
+
+        detailChatApi.getListChatApi(idChat,0)
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribeBy (
+                onNext = {
+                    liveDataChatModel.value=it
+                },onError = {
+                    Log.e("kiemtra","Error getListChat - "+it.message)
+                },
+                onComplete = {
+
+                }
+            )
+    }
 
     @SuppressLint("CheckResult")
     fun getDetailStories(userModel: UserModel){

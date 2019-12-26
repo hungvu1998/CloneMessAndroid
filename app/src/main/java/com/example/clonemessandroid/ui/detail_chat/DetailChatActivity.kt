@@ -40,6 +40,7 @@ import com.example.clonemessandroid.util.ImageFilePath
 import com.example.clonemessandroid.viewmodels.ViewModelProvidersFactory
 import com.github.nkzawa.emitter.Emitter
 import com.github.nkzawa.socketio.client.IO
+import com.github.nkzawa.socketio.client.Socket
 import com.google.gson.Gson
 import com.squareup.picasso.Picasso
 import dagger.android.support.DaggerAppCompatActivity
@@ -82,7 +83,8 @@ class DetailChatActivity : DaggerAppCompatActivity (),RecyclerImgFullScreen{
     var active :Boolean =false
     var listChatDetailModel: ArrayList<ChatDetailModel> = ArrayList()
     lateinit var imgFriend :String
-    private var socket = IO.socket("https://clonemessage.herokuapp.com/")
+    @Inject
+     lateinit var socket:Socket
     lateinit var adapter: DetailChatRecyclerAdapter
     val REQUEST_PERMISSION_CAMERA=5
     val REQUEST_PERMISSION_GALLERY=6
@@ -93,12 +95,7 @@ class DetailChatActivity : DaggerAppCompatActivity (),RecyclerImgFullScreen{
     var totalPage = 0
     override fun onStart() {
         super.onStart()
-        if(socket.connected()){
-            Log.d("kiemtraData","da connect")
-        }
-        else{
-            Log.d("kiemtraData","chua connect")
-        }
+
 //
 //        if(json!=null)
 //        socket.emit("username",json)
@@ -107,10 +104,10 @@ class DetailChatActivity : DaggerAppCompatActivity (),RecyclerImgFullScreen{
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.layout_chat_detail)
-        socket.connect()
         idChat = intent.getStringExtra("idChat")
         from = intent.getStringExtra("from")
         to = intent.getStringExtra("to")
+
         imgFriend = intent.getStringExtra("imgFriend")
         active = intent.getBooleanExtra("active",false)
         viewModel = ViewModelProviders.of(this,providerFactory).get(DetailChatViewModel::class.java)
@@ -500,7 +497,6 @@ class DetailChatActivity : DaggerAppCompatActivity (),RecyclerImgFullScreen{
 
     override fun onDestroy() {
         super.onDestroy()
-        socket.disconnect()
     }
 
     private val onNewMessage =
@@ -508,9 +504,8 @@ class DetailChatActivity : DaggerAppCompatActivity (),RecyclerImgFullScreen{
             runOnUiThread {
                 val data= it[0] as JSONObject
                 idChat= data["idChat"].toString()
-                if(data["from"].toString() != from){
+                if(data["from"].toString() == to){
 
-                    Log.d("kiemtraData",""+data)
                     var chatDetailModel = ChatDetailModel()
                     chatDetailModel.idChat = idChat
                     chatDetailModel.content = data["content"].toString()

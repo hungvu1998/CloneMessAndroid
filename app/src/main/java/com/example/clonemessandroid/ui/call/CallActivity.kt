@@ -220,6 +220,6 @@ class CallActivity : DaggerAppCompatActivity(), SessionListener, PublisherListen
 
     override fun onDestroy() {
         super.onDestroy()
-        socket.disconnect()
+        //socket.disconnect()
     }
 }
